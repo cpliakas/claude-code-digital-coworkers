@@ -28,3 +28,8 @@ A Claude Code plugin marketplace containing reusable agents and skills organized
 - If it needs to learn and decide → agent
 - If it needs to execute a procedure → skill
 - Agents use skills; skills don't use agents
+
+### README
+- Keep README.md in sync with any changes to plugins, agents, or skills
+- The Plugins section tables must reflect current agent/skill names and descriptions
+- The Repository Structure tree must reflect the current file layout

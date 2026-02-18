@@ -1,5 +1,5 @@
 ---
-name: test-specialist
+name: qa-specialist
 description: >
   QA lead and test specialist. Use proactively for test strategy, writing tests,
   test architecture, fixture design, mock strategies, isolation patterns, test

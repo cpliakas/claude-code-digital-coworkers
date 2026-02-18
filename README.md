@@ -24,7 +24,7 @@ Core engineering agents and skills every project needs.
 | Type | Name | Description |
 |------|------|-------------|
 | Agent | `security-reviewer` | Catches vulnerabilities before they ship — OWASP Top 10, dependency risk, secret detection |
-| Agent | `test-specialist` | Test strategy, pytest patterns, fixture design, mocking, coverage analysis |
+| Agent | `qa-specialist` | QA lead — test strategy, fixture design, mocking, coverage analysis, flakiness diagnosis |
 | Skill | `/security-scan` | Run a security checklist against staged changes, a branch diff, or a specific file |
 
 ### product
@@ -86,7 +86,7 @@ claude-code-digital-coworkers/
     │   ├── .claude-plugin/plugin.json
     │   ├── agents/
     │   │   ├── security-reviewer.md
-    │   │   └── test-specialist.md
+    │   │   └── qa-specialist.md
     │   └── skills/
     │       └── security-scan/SKILL.md
     ├── product/
