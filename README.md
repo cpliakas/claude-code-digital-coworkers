@@ -34,8 +34,8 @@ Product management agents and skills.
 | Type | Name | Description |
 |------|------|-------------|
 | Agent | `product-owner` | Roadmap keeper — advises on sequencing, priorities, and phase transitions |
-| Skill | `/write-user-story` | Generate a well-structured GitHub issue with acceptance criteria |
-| Skill | `/create-epic` | Create a GitHub Project as an epic with goals and initial story breakdown |
+| Skill | `/write-user-story` | Write a well-structured user story with acceptance criteria and INVEST validation |
+| Skill | `/create-epic` | Create an epic specification with scope, success criteria, and sequenced story breakdown |
 
 ### cloud-infra
 
