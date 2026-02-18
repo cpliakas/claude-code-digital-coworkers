@@ -25,8 +25,8 @@ Create a GitHub issue as a well-structured user story.
 ### 2. Draft the Story
 
 **Title**: Action-oriented, concise, starts with a verb.
-- Good: "Add auto-push to QBO after approval"
-- Bad: "QBO improvement" or "Feature: better QBO"
+- Good: "Add email notification after order approval"
+- Bad: "Email improvement" or "Feature: better emails"
 
 **Body structure**:
 

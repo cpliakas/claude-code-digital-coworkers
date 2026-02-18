@@ -23,7 +23,7 @@ Create a GitHub Project representing an epic, with goals and initial stories.
 
 ### 2. Create the Project
 Use `gh project create` with:
-- **Title**: Clear, scoped (e.g., "Release 1.0.0 - Zapier Replacement")
+- **Title**: Clear, scoped (e.g., "Release 1.0.0 - User Authentication")
 - **Description**: 2-3 sentences on goals, scope boundary, and success criteria
 
 ### 3. Break Down Into Stories
