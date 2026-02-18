@@ -4,6 +4,15 @@ A Claude Code plugin marketplace containing reusable agents and skills organized
 
 ## Authoring Conventions
 
+### Frontmatter
+- Use quoted strings for `description` — not YAML folded scalars (`>` or `|`). The Claude Code VS Code extension's frontmatter parser does not support multi-line scalar syntax.
+  - Good: `description: "One line describing the agent or skill."`
+  - Bad: `description: >` followed by indented continuation lines
+- Skills use `user-invokable` (with **k**), not `user-invocable`
+
+### Markdown Body
+- Always add a blank line between a heading (or bold-text header like `**Triggers:**`) and the following list or paragraph. Omitting the blank line violates MD022/MD032 and can cause rendering issues.
+
 ### Agents
 - One markdown file per agent in `plugins/<plugin>/agents/`
 - Follow the agent definition template: frontmatter (name, description, model, memory) + body (jurisdiction, delegation, key knowledge, memory protocol)

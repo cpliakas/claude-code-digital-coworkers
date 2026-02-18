@@ -1,10 +1,7 @@
 ---
 name: write-user-story
-description: >
-  Write a well-structured user story with acceptance criteria and INVEST
-  validation. Use when formalizing requirements, breaking down epics, or
-  drafting work items for any backlog tool.
-user-invocable: true
+description: "Write a well-structured user story with acceptance criteria and INVEST validation. Use when formalizing requirements, breaking down epics, or drafting work items for any backlog tool."
+user-invokable: true
 allowed-tools: Read, Grep, Glob
 argument-hint: "[description of the feature or requirement]"
 ---
@@ -19,6 +16,7 @@ Write a complete, high-quality user story ready for any backlog tool.
 ## Process
 
 ### 1. Gather Context
+
 - Read the project's CLAUDE.md for architecture, conventions, and domain language
 - Scan for a roadmap or backlog file if one exists (Glob for roadmap*, backlog*, TODO*)
 - Understand the domain well enough to write specific, testable criteria

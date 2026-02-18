@@ -1,9 +1,7 @@
 ---
 name: cf-lint
-description: >
-  Validate a CloudFormation template against best practices and common
-  errors. Use before deploying stacks or during PR review of CF changes.
-user-invocable: true
+description: "Validate a CloudFormation template against best practices and common errors. Use before deploying stacks or during PR review of CF changes."
+user-invokable: true
 context: fork
 allowed-tools: Read, Grep, Glob, Bash
 argument-hint: "[path to CloudFormation template]"
@@ -22,6 +20,7 @@ Validate a CloudFormation template against best practices.
 Parse the template and identify all sections (Parameters, Resources, Outputs, etc.).
 
 ### 2. Structural Checks
+
 - [ ] Has Description
 - [ ] Has AWSTemplateFormatVersion
 - [ ] Parameters have AllowedValues or AllowedPattern constraints
@@ -29,6 +28,7 @@ Parse the template and identify all sections (Parameters, Resources, Outputs, et
 - [ ] No hardcoded values that should be parameters (account IDs, AMI IDs, ARNs)
 
 ### 3. Security Checks
+
 - [ ] No secrets in Parameters default values or resource properties
 - [ ] Security groups don't allow 0.0.0.0/0 on non-HTTP ports
 - [ ] IAM policies follow least privilege (no Action: "*" or Resource: "*")
@@ -36,11 +36,13 @@ Parse the template and identify all sections (Parameters, Resources, Outputs, et
 - [ ] CloudTrail or logging enabled where applicable
 
 ### 4. Reliability Checks
+
 - [ ] Stateful resources have DeletionPolicy: Retain
 - [ ] Multi-AZ enabled for databases and critical services
 - [ ] Auto-scaling configured where appropriate
 
 ### 5. Best Practice Checks
+
 - [ ] All resources tagged (Environment, Project, ManagedBy)
 - [ ] Uses !Ref and !GetAtt over hardcoded values
 - [ ] No circular dependencies

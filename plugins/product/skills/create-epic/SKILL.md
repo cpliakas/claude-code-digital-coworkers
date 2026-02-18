@@ -1,10 +1,7 @@
 ---
 name: create-epic
-description: >
-  Create an epic specification with problem statement, success criteria, scope
-  boundaries, and a sequenced story breakdown. Use when starting a new feature
-  area, initiative, or release.
-user-invocable: true
+description: "Create an epic specification with problem statement, success criteria, scope boundaries, and a sequenced story breakdown. Use when starting a new feature area, initiative, or release."
+user-invokable: true
 allowed-tools: Read, Grep, Glob
 argument-hint: "[epic title and description]"
 ---
@@ -20,6 +17,7 @@ story breakdown.
 ## Process
 
 ### 1. Gather Context
+
 - Read the project's CLAUDE.md for architecture, conventions, and strategic context
 - Scan for a roadmap or backlog file if one exists (Glob for roadmap*, backlog*, TODO*)
 - Identify existing work that this epic relates to or depends on
