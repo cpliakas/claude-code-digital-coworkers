@@ -1,8 +1,8 @@
-# digital-coworkers
+# Claude Code Digital Coworkers
+
+> **Hypothesis**: Humans can elevate from individual contributor to manager of virtual teams by delegating to AI specialists that learn on the job.
 
 A Claude Code plugin marketplace of reusable **digital coworkers** — specialist agents and skills that can be installed across projects. Each coworker brings generic domain expertise while accumulating project-specific memory on the job.
-
-The idea: humans elevate from individual contributor to manager of virtual teams.
 
 ## Quick Start
 
