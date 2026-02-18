@@ -1,0 +1,26 @@
+{
+  "name": "digital-coworkers",
+  "owner": {
+    "name": "cpliakas"
+  },
+  "plugins": [
+    {
+      "name": "foundations",
+      "source": "./plugins/foundations",
+      "description": "Core engineering agents (security, testing) and skills every project needs",
+      "version": "0.1.0"
+    },
+    {
+      "name": "product",
+      "source": "./plugins/product",
+      "description": "Product management agents and skills (user stories, epics, sprint planning)",
+      "version": "0.1.0"
+    },
+    {
+      "name": "cloud-infra",
+      "source": "./plugins/cloud-infra",
+      "description": "Cloud infrastructure agents (DevOps, AWS, CloudFormation) and skills",
+      "version": "0.1.0"
+    }
+  ]
+}
