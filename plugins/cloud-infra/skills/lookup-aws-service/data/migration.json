@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "service": "AWS DataSync",
+    "category": "migration",
+    "one_liner": "Managed data transfer service for automating and accelerating movement of data between on-premises storage, edge locations, and AWS storage services.",
+    "when_to_use": [
+      "Migrate large datasets from on-premises NFS/SMB shares or HDFS to S3, EFS, or FSx",
+      "Ongoing replication of data between on-premises and AWS for hybrid workflows",
+      "Transfer data between AWS storage services (S3 to EFS, EFS to S3, S3 to S3 cross-region)",
+      "Automate recurring data transfers with scheduling and data integrity verification",
+      "Need network bandwidth optimization with compression and built-in encryption in transit"
+    ],
+    "when_not_to_use": [
+      "One-time massive offline data transfer (hundreds of TB+) where network is too slow (use Snow Family)",
+      "Real-time or streaming data transfer (use Kinesis or Direct Connect)",
+      "Database migration (use DMS for database-specific migration)",
+      "Hybrid cloud file access that needs low-latency local caching (use Storage Gateway)"
+    ],
+    "key_facts": [
+      "Agent-based: install a DataSync agent on-premises (VM or EC2 instance) to read from source storage. Agentless for AWS-to-AWS transfers.",
+      "Supported sources: NFS, SMB, HDFS, S3, EFS, FSx (Windows, Lustre, OpenZFS, NetApp ONTAP), and self-managed object storage.",
+      "Supported destinations: S3 (all storage classes), EFS, FSx, and S3 transfer to Glacier.",
+      "Automatic data integrity verification: compares checksums at source and destination to ensure data consistency.",
+      "Transfer speeds: up to 10 Gbps per task, 10x faster than open-source tools. Uses purpose-built network protocol.",
+      "Scheduling: schedule tasks to run at specific times or intervals for recurring transfers.",
+      "Filtering: include or exclude files based on patterns (e.g., only transfer .log files, exclude temp directories).",
+      "Bandwidth throttling: configure bandwidth limits to avoid saturating network links.",
+      "Preserves file metadata: timestamps, permissions, ownership, and POSIX attributes are maintained.",
+      "Pay per GB transferred. No minimum commitments or upfront costs.",
+      "DataSync Discovery: scan on-premises storage systems to understand utilization and plan migration to AWS."
+    ],
+    "pricing_summary": "Data transferred: $0.0125/GB (flat rate). Agent: no charge for the agent software. Transfer between AWS services in the same region: $0.0125/GB. No charge for DataSync Discovery.",
+    "common_misconceptions": [
+      "DataSync is NOT Storage Gateway. DataSync is for moving data (migration and replication). Storage Gateway is for ongoing hybrid access with local caching.",
+      "DataSync is NOT limited to on-premises-to-AWS. It also transfers data between AWS services (S3 to EFS, cross-region S3 replication, etc.).",
+      "DataSync does NOT require Snow Family. For data that can be transferred over the network (even at hundreds of TB), DataSync is simpler and faster. Use Snow Family when network transfer is impractical.",
+      "DataSync does NOT run continuously. It runs tasks (one-time or scheduled). For continuous file system mirroring, consider Storage Gateway or native replication."
+    ],
+    "related_services": ["S3", "EFS", "FSx", "Storage Gateway", "Snow Family", "Direct Connect", "DMS"]
+  }
+]

@@ -1,1 +1,114 @@
-[]
+[
+  {
+    "service": "Amazon Kinesis",
+    "category": "analytics",
+    "one_liner": "Real-time streaming data platform with Data Streams for custom processing, Data Firehose for managed delivery to storage/analytics, and Data Analytics for SQL/Flink on streams.",
+    "when_to_use": [
+      "Real-time data ingestion from thousands of sources (IoT devices, clickstreams, logs, metrics)",
+      "Stream processing with sub-second latency for real-time dashboards, alerting, or anomaly detection",
+      "Deliver streaming data to S3, Redshift, OpenSearch, or Splunk with Firehose (zero administration)",
+      "Real-time analytics using SQL or Apache Flink on streaming data (Data Analytics)",
+      "Change data capture from DynamoDB or database sources for real-time downstream processing"
+    ],
+    "when_not_to_use": [
+      "Asynchronous message queuing with ordering and exactly-once semantics (use SQS FIFO)",
+      "Pub/sub fan-out to multiple subscribers (use SNS or EventBridge)",
+      "Batch ETL processing that does not need real-time latency (use Glue)"
+    ],
+    "key_facts": [
+      "Kinesis Data Streams: real-time streaming with configurable retention (24 hours default, up to 365 days). Consumers process records using KCL, Lambda, or custom applications. Supports multiple consumers per stream.",
+      "Kinesis Data Firehose: fully managed delivery service. Buffers and delivers data to S3, Redshift, OpenSearch, Splunk, or HTTP endpoints. Can transform data using Lambda before delivery. No consumer code needed.",
+      "Kinesis Data Analytics: run SQL queries or Apache Flink applications on streaming data in real-time. Fully managed, no infrastructure to manage.",
+      "Data Streams shards: each shard provides 1 MB/s input and 2 MB/s output. Scale by adding or removing shards (or use on-demand mode for automatic scaling).",
+      "On-demand mode: automatically scales shards based on throughput. No capacity planning needed. Pay per GB of data ingested and retrieved.",
+      "Enhanced fan-out: each consumer gets 2 MB/s per shard via dedicated HTTP/2 connections (push model). Without enhanced fan-out, all consumers share 2 MB/s per shard (pull model).",
+      "Firehose buffering: configurable buffer size (1-128 MB) and interval (60-900 seconds). Delivers when either threshold is met. Near-real-time (60+ seconds latency), not true real-time.",
+      "Firehose can convert formats (JSON to Parquet/ORC) and compress data (GZIP, Snappy) before delivery to S3.",
+      "Data Streams integrates with Lambda via event source mappings for serverless stream processing.",
+      "Server-side encryption with KMS for data at rest in Data Streams."
+    ],
+    "pricing_summary": "Data Streams on-demand: $0.08/GB ingested, $0.04/GB retrieved. Provisioned: $0.015/shard/hour + $0.014/1M PUT payload units. Firehose: $0.029/GB ingested (first 500 TB). Data Analytics: $0.11/KPU-hour.",
+    "common_misconceptions": [
+      "Kinesis Data Firehose is NOT real-time. It has a minimum 60-second buffer interval. For true sub-second processing, use Kinesis Data Streams with Lambda or KCL consumers.",
+      "Data Streams and Firehose are DIFFERENT services. Data Streams requires you to build consumers; Firehose manages delivery automatically. You can use Firehose as a consumer of Data Streams.",
+      "Kinesis Data Streams retention can be extended to 365 days. It is NOT limited to 24 hours. Extended retention costs extra.",
+      "On-demand mode eliminates the need to manage shards manually. You do NOT need to predict throughput in advance.",
+      "Firehose CAN transform data inline using Lambda and convert formats (JSON to Parquet). It is not just a passthrough delivery pipe."
+    ],
+    "related_services": ["S3", "Redshift", "Lambda", "OpenSearch", "Glue", "DynamoDB Streams", "Firehose"]
+  },
+  {
+    "service": "Amazon Athena",
+    "category": "analytics",
+    "one_liner": "Serverless interactive query service that analyzes data directly in S3 using standard SQL with no infrastructure to manage.",
+    "when_to_use": [
+      "Ad-hoc SQL queries on data stored in S3 (logs, CSV, JSON, Parquet, ORC, Avro)",
+      "Quick analysis without setting up a database or loading data into a warehouse",
+      "Query CloudTrail logs, VPC Flow Logs, ALB access logs, or other AWS service logs stored in S3",
+      "Data lake querying when data is already in S3 and needs occasional analysis",
+      "Cost-effective alternative to running an always-on database for infrequent queries"
+    ],
+    "when_not_to_use": [
+      "Frequent, high-concurrency queries on large datasets (use Redshift for dedicated warehouse workloads)",
+      "Real-time streaming analytics (use Kinesis Data Analytics)",
+      "Transactional data processing (use RDS or DynamoDB)",
+      "Complex ETL transformations (use Glue or EMR)"
+    ],
+    "key_facts": [
+      "Serverless: no infrastructure to manage. Point at S3 data and start querying immediately.",
+      "Presto/Trino engine: supports standard SQL with joins, window functions, and complex queries.",
+      "Data formats: CSV, JSON, ORC, Parquet, Avro, and more. Parquet and ORC are columnar formats that dramatically reduce cost and improve performance (less data scanned).",
+      "Partitioning: organize data in S3 by key prefixes (e.g., year=/month=/day=) to scan only relevant partitions. Reduces data scanned and cost.",
+      "Integration with AWS Glue Data Catalog: use Glue crawlers to automatically discover schemas and create tables. Athena uses the Glue Data Catalog as its metastore.",
+      "Federated queries: query data in RDS, DynamoDB, Redshift, and other sources through Lambda-based data source connectors (not just S3).",
+      "Query results are stored in an S3 bucket you specify. Results can be encrypted with KMS.",
+      "Workgroups: isolate queries, control costs, and set per-query data scan limits for different teams.",
+      "CTAS (CREATE TABLE AS SELECT): save query results as new tables in S3 in optimized formats (Parquet).",
+      "S3 Glacier Instant Retrieval data can be queried directly. Glacier Flexible and Deep Archive require restore first."
+    ],
+    "pricing_summary": "Pay per query: $5 per TB of data scanned. Using columnar formats (Parquet/ORC) and partitioning can reduce costs by 90%+. No charge for DDL statements or failed queries.",
+    "common_misconceptions": [
+      "Athena is NOT a database. It queries data in-place in S3. Data stays in S3 and is never loaded into Athena.",
+      "Athena pricing is NOT per query. It is per TB of data SCANNED. Converting to Parquet/ORC and using partitions dramatically reduces the amount of data scanned and therefore cost.",
+      "Athena is NOT slow for all workloads. With properly partitioned columnar data, queries can return in seconds. Performance depends on data organization.",
+      "Athena CAN query non-S3 data sources using federated queries. It is not limited to S3."
+    ],
+    "related_services": ["S3", "Glue", "Lake Formation", "QuickSight", "Redshift Spectrum", "CloudTrail"]
+  },
+  {
+    "service": "AWS Glue",
+    "category": "analytics",
+    "one_liner": "Serverless ETL service with automatic schema discovery (crawlers), a central Data Catalog, and managed Spark/Python jobs for data transformation.",
+    "when_to_use": [
+      "Discover and catalog data schemas across S3, RDS, Redshift, and other data stores (Glue Crawlers)",
+      "ETL jobs to transform, clean, and move data between data stores (CSV to Parquet, S3 to Redshift, etc.)",
+      "Central metadata catalog for data lake (used by Athena, Redshift Spectrum, EMR, Lake Formation)",
+      "Convert file formats: CSV/JSON to columnar formats (Parquet, ORC) for cost-effective querying",
+      "Code-free ETL with Glue Studio visual editor"
+    ],
+    "when_not_to_use": [
+      "Real-time streaming transformations (use Kinesis Data Analytics or Lambda)",
+      "Simple queries on S3 data without transformation (use Athena directly)",
+      "Operational databases or transactional workloads (use RDS or DynamoDB)"
+    ],
+    "key_facts": [
+      "Glue Data Catalog: central metadata repository. Stores table definitions, schemas, and partition information. Used by Athena, Redshift Spectrum, EMR, and Lake Formation as a shared metastore.",
+      "Glue Crawlers: automatically scan data stores (S3, RDS, DynamoDB, JDBC sources) to infer schemas and create/update tables in the Data Catalog. Schedule crawlers to keep schemas up to date.",
+      "Glue ETL Jobs: serverless Apache Spark or Python shell jobs for data transformation. Auto-generate ETL code from visual editor or write custom PySpark/Scala scripts.",
+      "Glue Studio: visual ETL editor for creating, running, and monitoring Glue jobs with a drag-and-drop interface. No code required for common transformations.",
+      "Job bookmarks: track data that has already been processed to avoid reprocessing on subsequent job runs. Enables incremental ETL.",
+      "Glue DataBrew: visual data preparation tool for cleaning and normalizing data without writing code. Separate from Glue ETL.",
+      "Supports JDBC connections to RDS, Redshift, and external databases for cross-source ETL.",
+      "Development endpoints: create interactive development environments for authoring and testing Glue ETL scripts.",
+      "Glue Schema Registry: manage and enforce schemas for streaming data (Kafka, Kinesis, MSK)."
+    ],
+    "pricing_summary": "Crawlers: $0.44/DPU-hour. ETL jobs: $0.44/DPU-hour. Data Catalog: free for first million objects, $1/100K objects/month after. Development endpoints: $0.44/DPU-hour. No charge for Data Catalog API calls up to 1M/month.",
+    "common_misconceptions": [
+      "Glue Data Catalog is NOT just for Glue ETL. It is the shared metastore used by Athena, Redshift Spectrum, EMR, and Lake Formation. Creating tables in Glue Catalog makes them available across all these services.",
+      "Glue Crawlers are NOT required to use Athena. You can manually define tables in the Glue Data Catalog. Crawlers are a convenience for automatic schema discovery.",
+      "Glue ETL does NOT require Spark expertise. Glue Studio provides a visual editor that generates code automatically for common ETL patterns.",
+      "Glue is NOT always needed for CSV-to-Parquet conversion. Athena CTAS can also convert formats. Use Glue for recurring ETL jobs and Athena CTAS for one-time conversions."
+    ],
+    "related_services": ["Athena", "S3", "Redshift", "Lake Formation", "EMR", "Kinesis", "Data Catalog"]
+  }
+]

@@ -66,5 +66,44 @@
       "Global Tables replication is NOT instant. Sub-second typical, but conflict resolution is last-writer-wins."
     ],
     "related_services": ["S3", "Lambda", "Kinesis Data Streams", "AWS Backup", "Athena", "Glue"]
+  },
+  {
+    "service": "Amazon Aurora",
+    "category": "database",
+    "one_liner": "MySQL/PostgreSQL-compatible managed relational database with up to 5x MySQL and 3x PostgreSQL performance, automatic storage scaling, and multi-region Global Database.",
+    "when_to_use": [
+      "MySQL or PostgreSQL workloads needing higher performance and availability than standard RDS",
+      "Read-heavy workloads that benefit from up to 15 low-latency read replicas with automatic scaling",
+      "Applications needing automatic storage scaling (up to 128 TB) without manual provisioning",
+      "Multi-region disaster recovery or global reads with sub-second cross-region replication (Global Database)",
+      "Variable or unpredictable workloads where serverless auto-scaling is preferred (Aurora Serverless v2)"
+    ],
+    "when_not_to_use": [
+      "Non-relational access patterns at massive scale (use DynamoDB)",
+      "Need Oracle, SQL Server, or MariaDB engine support (use RDS)",
+      "Budget-sensitive workloads where standard RDS performance is sufficient (Aurora has a ~20% price premium)",
+      "Need full OS-level control (use EC2 self-managed database)"
+    ],
+    "key_facts": [
+      "Storage: automatically grows from 10 GB to 128 TB in 10 GB increments. 6 copies of data across 3 AZs. Self-healing and continuously backed up to S3.",
+      "Read replicas: up to 15 Aurora Replicas with <20ms replication lag. Aurora Auto Scaling can add/remove replicas based on CloudWatch metrics (CPU, connections).",
+      "Failover: automatic failover to a read replica in <30 seconds. Faster than standard RDS Multi-AZ failover.",
+      "Aurora Serverless v2: scales compute capacity continuously between a minimum and maximum ACU (Aurora Capacity Units). Scales in fractions of ACUs. Ideal for variable, intermittent, or unpredictable workloads.",
+      "Aurora Global Database: replicates across up to 5 secondary regions with <1 second replication lag. Supports managed planned failover (switchover) and unplanned failover (disaster recovery). RPO of ~1 second.",
+      "Backtrack: rewind the database to a specific point in time without restoring from a backup (MySQL-compatible only). Faster than point-in-time recovery.",
+      "Cloning: create a full copy of an Aurora database in seconds using copy-on-write. No additional storage cost until data diverges. Useful for testing.",
+      "Parallel Query: pushes query processing to the storage layer for analytical queries on operational data without needing a separate analytics database.",
+      "Multi-Master (deprecated in favor of Aurora Global Database and writer endpoint): allowed multiple write instances.",
+      "Compatible with existing MySQL 5.7/8.0 and PostgreSQL 13/14/15/16 applications with minimal changes."
+    ],
+    "pricing_summary": "Instance hours: varies by instance class (e.g., db.r6g.large ~$0.26/hour). Storage: $0.10/GB/month. I/O: $0.20/million requests. Aurora Serverless v2: $0.12/ACU-hour. Global Database: cross-region replicated I/O charges apply.",
+    "common_misconceptions": [
+      "Aurora IS MySQL/PostgreSQL compatible. You can use existing MySQL or PostgreSQL drivers, tools, and applications with minimal changes.",
+      "Aurora Replicas are NOT the same as RDS read replicas. Aurora Replicas share the same underlying storage volume, providing <20ms replication lag vs. seconds for RDS read replicas.",
+      "Aurora Serverless v2 CAN scale to zero (0 ACUs) but only with auto-pause enabled, and it takes time to resume. For instant availability, set a minimum ACU > 0.",
+      "Aurora Auto Scaling for read replicas is built-in. You do NOT need to manually add replicas when read load increases.",
+      "Aurora Global Database failover promotes a secondary region, not a read replica. The process involves detaching the secondary and promoting it to a standalone cluster."
+    ],
+    "related_services": ["RDS", "DynamoDB", "ElastiCache", "RDS Proxy", "CloudWatch"]
   }
 ]

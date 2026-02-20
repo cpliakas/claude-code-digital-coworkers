@@ -99,5 +99,46 @@
       "Beanstalk Worker tier processes SQS messages natively. No need to write SQS polling code in your application."
     ],
     "related_services": ["EC2", "ECS", "Fargate", "App Runner", "CloudFormation", "CodePipeline"]
+  },
+  {
+    "service": "AWS Lambda",
+    "category": "compute",
+    "one_liner": "Serverless compute that runs code in response to events with automatic scaling, no server management, and pay-per-invocation pricing.",
+    "when_to_use": [
+      "Event-driven processing: S3 uploads, DynamoDB Streams, SQS messages, API Gateway requests, CloudWatch Events",
+      "Short-duration tasks (up to 15 minutes) that do not require persistent state",
+      "APIs behind API Gateway with variable or unpredictable traffic (including zero traffic periods)",
+      "Data transformation, ETL, log processing, or real-time file processing",
+      "Asynchronous background tasks triggered by application events"
+    ],
+    "when_not_to_use": [
+      "Long-running processes exceeding 15 minutes (use ECS, Fargate, or Step Functions)",
+      "Workloads requiring consistent high throughput with predictable load (EC2 or containers may be more cost-effective)",
+      "Applications needing full OS control, GPU access, or custom runtimes beyond Lambda layers",
+      "Stateful applications requiring persistent local storage or in-memory state across invocations"
+    ],
+    "key_facts": [
+      "Maximum execution timeout: 15 minutes. For longer workflows, chain with Step Functions or use containers.",
+      "Memory: 128 MB to 10,240 MB (10 GB). CPU scales proportionally with memory allocation.",
+      "Concurrency: default 1,000 concurrent executions per region (soft limit, can be increased). Reserved concurrency guarantees capacity for critical functions.",
+      "Provisioned concurrency: pre-initializes execution environments to eliminate cold starts. Useful for latency-sensitive workloads.",
+      "Event source mappings: polls SQS, Kinesis, DynamoDB Streams, and Kafka for records and invokes Lambda with batches.",
+      "Lambda@Edge and CloudFront Functions: run code at CloudFront edge locations for request/response manipulation.",
+      "Supports runtimes: Node.js, Python, Java, .NET, Go, Ruby, and custom runtimes via Lambda layers or container images.",
+      "Lambda can run container images up to 10 GB. Useful for large dependencies or existing Docker-based workflows.",
+      "Asynchronous invocation: Lambda retries failed invocations twice. Dead-letter queues (SQS) or on-failure destinations capture failures.",
+      "Lambda Destinations: route asynchronous invocation results (success or failure) to SQS, SNS, Lambda, or EventBridge without custom code.",
+      "VPC-attached Lambda: can access resources in a VPC (RDS, ElastiCache). Uses Hyperplane ENIs for fast networking with no cold start penalty.",
+      "Environment variables, KMS encryption, and IAM execution roles provide secure configuration and least-privilege access."
+    ],
+    "pricing_summary": "Pay per request ($0.20/1M requests) + compute duration ($0.0000166667/GB-second). Free tier: 1M requests + 400,000 GB-seconds per month. No charge when not running.",
+    "common_misconceptions": [
+      "Lambda is NOT limited to small tasks. With 10 GB memory and 15-minute timeout, it can handle substantial workloads including ML inference and data processing.",
+      "Cold starts are NOT a problem for most workloads. VPC-attached Lambda no longer has slow cold starts (fixed in 2019). For latency-critical APIs, use provisioned concurrency.",
+      "Lambda DOES support containers. You can package functions as Docker container images up to 10 GB.",
+      "Lambda is NOT always cheaper than EC2. For sustained high-throughput workloads running 24/7, EC2 or Fargate may be more cost-effective. Lambda excels at variable/spiky/low-traffic patterns.",
+      "SQS-triggered Lambda handles failures automatically via visibility timeout and dead-letter queues. Failed messages return to the queue for retry without custom retry logic."
+    ],
+    "related_services": ["API Gateway", "SQS", "SNS", "DynamoDB Streams", "S3", "EventBridge", "Step Functions", "CloudFront"]
   }
 ]

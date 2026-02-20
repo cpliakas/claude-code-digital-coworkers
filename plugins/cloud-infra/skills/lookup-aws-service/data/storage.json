@@ -127,5 +127,85 @@
       "NOT the same as EFS. FSx is Windows/SMB-native; EFS is Linux/NFS-native. They serve different ecosystems."
     ],
     "related_services": ["FSx for Lustre", "EFS", "AWS Managed Microsoft AD", "AD Connector", "AWS Directory Service"]
+  },
+  {
+    "service": "Amazon S3 Core Features",
+    "category": "storage",
+    "one_liner": "Object storage with storage classes, lifecycle policies, versioning, encryption, Transfer Acceleration, static website hosting, and VPC endpoints for private access.",
+    "when_to_use": [
+      "Store and retrieve any amount of data (backups, logs, media, data lakes, static websites)",
+      "Static website hosting for HTML/CSS/JS/images with no server management",
+      "Data lake foundation for analytics with Athena, Redshift Spectrum, or EMR",
+      "Long-term archival with lifecycle transitions to Glacier storage classes",
+      "Cross-region or cross-account data sharing"
+    ],
+    "when_not_to_use": [
+      "POSIX file system semantics needed by applications (use EFS or FSx)",
+      "Block storage for EC2 instance boot volumes or databases (use EBS)",
+      "Frequently updated structured data with transactional access (use a database)",
+      "Low-latency shared file access from multiple EC2 instances (use EFS)"
+    ],
+    "key_facts": [
+      "Storage classes: S3 Standard, Intelligent-Tiering, Standard-IA, One Zone-IA, Glacier Instant Retrieval, Glacier Flexible Retrieval, Glacier Deep Archive. Each has different durability, availability, and cost tradeoffs.",
+      "S3 Intelligent-Tiering: automatically moves objects between frequent and infrequent access tiers based on usage patterns. Best for unknown or changing access patterns. No retrieval fees.",
+      "S3 Lifecycle policies: automate transitions between storage classes and object expiration. Apply to current versions, previous versions, or both. Critical when versioning is enabled to control storage growth.",
+      "S3 Versioning: keeps multiple versions of objects. Deletion creates a delete marker (recoverable). With versioning, lifecycle rules must target previous versions separately or storage grows indefinitely.",
+      "S3 Transfer Acceleration: uses CloudFront edge locations to speed uploads over long distances by 50-500%. Ideal for global data collection to a single bucket.",
+      "VPC Gateway Endpoint for S3: free, routes S3 traffic through AWS private network instead of the internet. No NAT gateway charges. Does not support cross-region access.",
+      "VPC Interface Endpoint for S3 (PrivateLink): enables private access from on-premises via VPN/Direct Connect, or cross-region. Has per-hour and per-GB charges.",
+      "Server-side encryption: SSE-S3 (default, AWS-managed keys), SSE-KMS (KMS customer-managed keys with audit trail and rotation), SSE-C (customer-provided keys).",
+      "S3 Batch Operations: perform bulk operations (copy, invoke Lambda, restore from Glacier) on billions of objects. Uses S3 Inventory manifests.",
+      "MFA Delete: requires MFA to delete object versions or change versioning state. Additional protection against accidental or malicious deletion.",
+      "Static website hosting: serves index and error documents directly from S3. Combined with CloudFront for HTTPS and global distribution.",
+      "Multipart upload: required for objects over 5 GB, recommended for objects over 100 MB. Enables parallel uploads and resume on failure."
+    ],
+    "pricing_summary": "S3 Standard: ~$0.023/GB/month. Standard-IA: ~$0.0125/GB/month + retrieval fee. Glacier Deep Archive: ~$0.00099/GB/month. Transfer Acceleration: $0.04-0.08/GB on top of transfer. VPC Gateway Endpoint: free. PUT/GET requests: $0.005/1K PUT, $0.0004/1K GET (Standard).",
+    "common_misconceptions": [
+      "S3 Intelligent-Tiering is NOT just for infrequent data. It handles both frequent and infrequent access automatically and is ideal when access patterns are unpredictable.",
+      "Gateway VPC Endpoints for S3 are FREE. You do NOT need a NAT gateway for EC2-to-S3 traffic in private subnets. Gateway endpoints eliminate data transfer charges through NAT.",
+      "S3 Versioning does NOT automatically clean up old versions. Without lifecycle rules on previous versions, storage grows indefinitely as every overwrite and delete creates a new version.",
+      "S3 Transfer Acceleration is NOT the same as CloudFront. Transfer Acceleration speeds uploads TO S3; CloudFront speeds downloads FROM S3 (or any origin) via edge caching.",
+      "S3 Standard is already multi-AZ (3+ AZs). You do NOT need cross-region replication for AZ-level resilience within a region.",
+      "Default encryption (SSE-S3) is now enabled automatically on all new buckets. You do NOT need to configure it manually for basic encryption at rest."
+    ],
+    "related_services": ["CloudFront", "Athena", "Glacier", "EFS", "Lambda", "KMS", "VPC Endpoints"]
+  },
+  {
+    "service": "Amazon EFS",
+    "category": "storage",
+    "one_liner": "Fully managed, elastic NFS file system for Linux workloads that can be shared across multiple EC2 instances and Availability Zones simultaneously.",
+    "when_to_use": [
+      "Multiple EC2 instances need concurrent read/write access to the same files (shared content, CMS, home directories)",
+      "Workloads that need a POSIX-compliant file system (Linux applications expecting standard file I/O)",
+      "Storage that must grow and shrink automatically without provisioning capacity",
+      "Container workloads (ECS, EKS, Fargate) needing persistent shared storage",
+      "Replacing instance store or EBS when data must survive instance termination and be shared"
+    ],
+    "when_not_to_use": [
+      "Windows workloads needing SMB/NTFS (use FSx for Windows File Server)",
+      "Single-instance high-IOPS block storage (use EBS io2 or gp3)",
+      "Object storage or data lake patterns (use S3)",
+      "HPC parallel workloads needing high throughput (use FSx for Lustre)"
+    ],
+    "key_facts": [
+      "NFS v4.0/v4.1 protocol. Works natively with Linux EC2 instances, ECS, EKS, and Fargate.",
+      "Elastic: automatically grows and shrinks as files are added/removed. No capacity provisioning needed.",
+      "Multi-AZ by default: data is stored redundantly across multiple AZs in a region for high availability and durability.",
+      "Storage classes: Standard (frequent access) and Infrequent Access (IA). Lifecycle management automatically moves files to IA after a configurable period (7, 14, 30, 60, or 90 days).",
+      "One Zone storage classes available for cost savings (~47% cheaper) when multi-AZ resilience is not required.",
+      "Performance modes: General Purpose (low latency, default) and Max I/O (higher aggregate throughput, higher latency).",
+      "Throughput modes: Bursting (scales with file system size), Provisioned (set throughput independent of size), Elastic (automatically scales throughput).",
+      "Supports encryption at rest (KMS) and in transit (TLS). Encryption at rest can be enabled at creation time.",
+      "Can be mounted from on-premises via AWS Direct Connect or VPN.",
+      "EFS Access Points: application-specific entry points that enforce a user identity and root directory for each application."
+    ],
+    "pricing_summary": "Standard storage: ~$0.30/GB/month. Infrequent Access: ~$0.016/GB/month + $0.01/GB data access. One Zone: ~$0.16/GB/month. One Zone-IA: ~$0.0133/GB/month. No minimum fee or setup cost.",
+    "common_misconceptions": [
+      "EFS is NOT the same as EBS. EBS is block storage attached to a single EC2 instance; EFS is a shared file system accessible from multiple instances simultaneously.",
+      "EFS is NOT for Windows. It uses NFS protocol (Linux). For Windows/SMB workloads, use FSx for Windows File Server.",
+      "EFS does NOT require capacity provisioning. It is elastic and grows/shrinks automatically. You pay only for what you store.",
+      "EFS Infrequent Access can reduce costs significantly (up to 92% cheaper than Standard) for files not accessed regularly. Enable lifecycle policies."
+    ],
+    "related_services": ["EBS", "FSx for Windows File Server", "FSx for Lustre", "S3", "ECS", "EKS"]
   }
 ]
