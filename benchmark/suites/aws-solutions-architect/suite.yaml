@@ -1,7 +1,7 @@
 suite:
   name: "AWS Solutions Architect SAA-C03"
   description: "Tests aws-solutions-architect against 494 SAA-C03 exam scenarios"
-  agent: "plugins/cloud-infra/agents/aws-solutions-architect.md"
+  agent: "plugins/cloud-infra-aws/agents/aws-solutions-architect.md"
   dataset: "questions.json"
 
 dataset_fields:

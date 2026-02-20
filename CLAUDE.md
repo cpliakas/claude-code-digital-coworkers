@@ -49,7 +49,7 @@ A Claude Code plugin marketplace containing reusable agents and skills organized
 - Results directories are gitignored
 - Prompt templates use Python `.format()` syntax (`{scenario}`, `{expected_answer}`, `{response}`)
 - Literal JSON braces in prompts must be doubled: `{{` and `}}`
-- Tool-use support: `--tools` flag enables in-process tool execution using data from `plugins/cloud-infra/skills/lookup-aws-service/data/` (override with `--tools-data <path>`)
+- Tool-use support: `--tools` flag enables in-process tool execution using data from `plugins/cloud-infra-aws/skills/lookup-aws-service/data/` (override with `--tools-data <path>`)
 - The harness executes tool calls in-process (Python functions), bypassing MCP/skill transport — it only needs the JSON data files
 - Tests live in `benchmark/tests/` and use pytest; run with `cd benchmark && pytest`
 

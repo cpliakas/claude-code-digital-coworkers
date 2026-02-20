@@ -20,7 +20,7 @@ If you're looking for well-maintained, general-purpose collections of Claude Cod
 
 Most agent collections are flat lists where each agent is independent and self-contained. Here, agents are organized as a team with explicit roles, hierarchy, and delegation chains defined in their markdown files.
 
-The `cloud-infra` plugin illustrates this. `devops-lead` sets tool-agnostic principles (deployment strategies, observability requirements, IaC standards). `aws-solutions-architect` translates those principles into AWS-specific architecture decisions, consulting `devops-lead` to validate that its recommendations serve broader DevOps patterns. `cloudformation-specialist` implements what the architect specifies, consulting upstream when unsure whether a design choice (e.g., nested vs. separate stacks) is correct. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
+The `cloud-infra-aws` plugin illustrates this. `devops-lead` sets tool-agnostic principles (deployment strategies, observability requirements, IaC standards). `aws-solutions-architect` translates those principles into AWS-specific architecture decisions, consulting `devops-lead` to validate that its recommendations serve broader DevOps patterns. `cloudformation-specialist` implements what the architect specifies, consulting upstream when unsure whether a design choice (e.g., nested vs. separate stacks) is correct. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
 
 Across plugins, the same pattern holds at different levels. `product-owner` advises on sequencing and priorities but never implements, acting as a consultative agent that checks proposed work against the roadmap. `qa-lead` owns the full test lifecycle and consults `security-engineer` for security-related tests. `security-engineer` doesn't delegate at all and exists as a leaf node consulted by others during review cycles.
 
@@ -40,26 +40,34 @@ Add the marketplace to your Claude Code project, then install the plugins you ne
 
 ```
 /plugin marketplace add cpliakas/claude-code-digital-coworkers
-/plugin install foundations@digital-coworkers
-/plugin install product@digital-coworkers
-/plugin install cloud-infra@digital-coworkers
+/plugin install security-engineer@digital-coworkers
+/plugin install qa-lead@digital-coworkers
+/plugin install product-owner@digital-coworkers
+/plugin install cloud-infra-aws@digital-coworkers
 ```
 
 ## Plugins
 
-### foundations
+### security-engineer
 
-Core engineering agents and skills every project needs.
+Security specialist for vulnerability detection and code security review.
 
 | Type | Name | Description |
 |------|------|-------------|
 | Agent | `security-engineer` | Catches vulnerabilities before they ship (OWASP Top 10, dependency risk, secret detection) |
-| Agent | `qa-lead` | QA lead covering test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis |
 | Skill | `/security-scan` | Run a security checklist against staged changes, a branch diff, or a specific file |
 
-### product
+### qa-lead
 
-Product management agents and skills.
+QA lead for test strategy and test lifecycle management.
+
+| Type | Name | Description |
+|------|------|-------------|
+| Agent | `qa-lead` | QA lead covering test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis |
+
+### product-owner
+
+Product owner for roadmap planning and work sequencing.
 
 | Type | Name | Description |
 |------|------|-------------|
@@ -67,9 +75,9 @@ Product management agents and skills.
 | Skill | `/write-user-story` | Write a well-structured user story with acceptance criteria and INVEST validation |
 | Skill | `/create-epic` | Create an epic specification with scope, success criteria, and sequenced story breakdown |
 
-### cloud-infra
+### cloud-infra-aws
 
-Cloud infrastructure agents covering DevOps strategy, AWS architecture, and CloudFormation implementation.
+AWS cloud infrastructure agents covering DevOps strategy, solutions architecture, and CloudFormation implementation.
 
 | Type | Name | Description |
 |------|------|-------------|
@@ -148,21 +156,24 @@ claude-code-digital-coworkers/
 │           ├── suite.yaml
 │           └── questions.json
 └── plugins/
-    ├── foundations/
+    ├── security-engineer/
     │   ├── .claude-plugin/plugin.json
     │   ├── agents/
-    │   │   ├── security-engineer.md
-    │   │   └── qa-lead.md
+    │   │   └── security-engineer.md
     │   └── skills/
     │       └── security-scan/SKILL.md
-    ├── product/
+    ├── qa-lead/
+    │   ├── .claude-plugin/plugin.json
+    │   └── agents/
+    │       └── qa-lead.md
+    ├── product-owner/
     │   ├── .claude-plugin/plugin.json
     │   ├── agents/
     │   │   └── product-owner.md
     │   └── skills/
     │       ├── write-user-story/SKILL.md
     │       └── create-epic/SKILL.md
-    └── cloud-infra/
+    └── cloud-infra-aws/
         ├── .claude-plugin/plugin.json
         ├── agents/
         │   ├── devops-lead.md

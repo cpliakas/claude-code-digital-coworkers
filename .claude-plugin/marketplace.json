@@ -5,21 +5,27 @@
   },
   "plugins": [
     {
-      "name": "foundations",
-      "source": "./plugins/foundations",
-      "description": "Core engineering agents (security, testing) and skills every project needs",
+      "name": "security-engineer",
+      "source": "./plugins/security-engineer",
+      "description": "Security specialist agent and skills for vulnerability detection, dependency risk, and code security review",
       "version": "0.1.0"
     },
     {
-      "name": "product",
-      "source": "./plugins/product",
-      "description": "Product management agents and skills (user stories, epics, sprint planning)",
+      "name": "qa-lead",
+      "source": "./plugins/qa-lead",
+      "description": "QA lead agent for test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis",
+      "version": "0.1.0"
+    },
+    {
+      "name": "product-owner",
+      "source": "./plugins/product-owner",
+      "description": "Product owner agent and skills for roadmap planning, user stories, and epic creation",
       "version": "0.2.0"
     },
     {
-      "name": "cloud-infra",
-      "source": "./plugins/cloud-infra",
-      "description": "Cloud infrastructure agents (DevOps, AWS, CloudFormation) and skills",
+      "name": "cloud-infra-aws",
+      "source": "./plugins/cloud-infra-aws",
+      "description": "AWS cloud infrastructure agents for DevOps strategy, solutions architecture, and CloudFormation",
       "version": "0.2.0"
     }
   ]

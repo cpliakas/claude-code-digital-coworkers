@@ -35,7 +35,7 @@ Parse `$ARGUMENTS`:
 Use Glob to find all JSON files in the `data/` directory relative to this skill:
 
 ```
-plugins/cloud-infra/skills/lookup-aws-service/data/*.json
+plugins/cloud-infra-aws/skills/lookup-aws-service/data/*.json
 ```
 
 Each file is named by category (e.g. `storage.json`, `compute.json`). Each file contains an array of capability cards.

@@ -640,7 +640,7 @@ def main():
         if args.tools_data:
             data_dir = Path(args.tools_data)
         else:
-            data_dir = (REPO_ROOT / "plugins" / "cloud-infra" /
+            data_dir = (REPO_ROOT / "plugins" / "cloud-infra-aws" /
                         "skills" / "lookup-aws-service" / "data")
         if not data_dir.exists():
             print(f"Error: tool data directory not found: {data_dir}")
