@@ -1,6 +1,6 @@
 # Agent Benchmark Harness
 
-A generic, config-driven test harness for evaluating Claude Code agents against domain-specific datasets. Each benchmark is defined by a **suite** — a directory containing a `suite.yaml` config and a dataset file.
+A generic, config-driven test harness for evaluating Claude Code agents against domain-specific datasets. Each benchmark is defined by a **suite**: a directory containing a `suite.yaml` config and a dataset file.
 
 ## Quick Start
 
@@ -14,7 +14,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your ANTHROPIC_API_KEY
 
-# Run a benchmark (dry run — no API calls)
+# Run a benchmark (dry run, no API calls)
 python3 benchmark.py suites/aws-solutions-architect --dry-run --sample 3
 
 # Run for real (small sample)
@@ -52,9 +52,9 @@ suites/my-agent/
 └── results/          # created automatically
 ```
 
-2. Write `suite.yaml` — see [Suite Configuration](#suite-configuration) below.
+2. Write `suite.yaml` (see [Suite Configuration](#suite-configuration) below).
 
-3. Prepare your dataset as a JSON array of objects. Each object needs at minimum an ID field, a scenario/question field, and an expected answer field. The field names are flexible — you map them in `suite.yaml`.
+3. Prepare your dataset as a JSON array of objects. Each object needs at minimum an ID field, a scenario/question field, and an expected answer field. The field names are flexible since you map them in `suite.yaml`.
 
 4. Run: `python3 benchmark.py suites/my-agent --dry-run --sample 3`
 
@@ -62,7 +62,7 @@ suites/my-agent/
 
 A `suite.yaml` has four sections:
 
-### `suite` — Metadata
+### `suite` (metadata)
 
 ```yaml
 suite:
@@ -72,7 +72,7 @@ suite:
   dataset: "questions.json"  # relative to suite directory
 ```
 
-### `dataset_fields` — Field mapping
+### `dataset_fields` (field mapping)
 
 Maps your dataset's JSON keys to the harness variables used in prompt templates:
 
@@ -84,7 +84,7 @@ dataset_fields:
   explanation: "explanation"      # optional, for reference
 ```
 
-### `defaults` — Model defaults
+### `defaults` (model defaults)
 
 ```yaml
 defaults:
@@ -92,7 +92,7 @@ defaults:
   judge_model: "claude-sonnet-4-5-20250929"
 ```
 
-### `modes` — Test modes
+### `modes` (test modes)
 
 Each mode defines how the agent is prompted, how the judge evaluates, and how results are scored.
 
@@ -177,8 +177,17 @@ Literal JSON braces in prompts must be doubled: `{{` and `}}`.
 
 Each run produces timestamped files in the results directory:
 
-- `results_<mode>_<timestamp>.json` — full results including agent responses
-- `results_<mode>_<timestamp>.csv` — scores only (no agent responses)
+- `results_<mode>_<timestamp>.json` contains full results including agent responses
+- `results_<mode>_<timestamp>.csv` contains scores only (no agent responses)
+
+## Testing
+
+The harness has its own unit tests covering suite loading, prompt rendering, API interactions, the benchmark runner, and output formatting. All API calls are mocked so no `ANTHROPIC_API_KEY` is needed.
+
+```bash
+cd benchmark
+pytest
+```
 
 ## Available Suites
 
