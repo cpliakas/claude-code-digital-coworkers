@@ -74,6 +74,27 @@ Agents form teams with clear delegation chains:
 
 All agents use `memory: project` — the agent definition is shared via the plugin, but each project maintains its own memory in `.claude/agent-memory/`. Generic learnings stay in the agent definition; project-specific learnings stay in project memory.
 
+## Benchmarking
+
+A generic test harness for evaluating agent quality against domain-specific datasets. Each benchmark is a **suite** — a config file plus a dataset, no harness code changes needed.
+
+```bash
+cd benchmark
+pip install -r requirements.txt
+
+# Dry run (no API calls)
+python3 benchmark.py suites/aws-solutions-architect --dry-run --sample 3
+
+# Run direct mode on 20 random questions
+python3 benchmark.py suites/aws-solutions-architect --mode direct --sample 20
+```
+
+| Suite | Agent | Questions | Description |
+|-------|-------|-----------|-------------|
+| `aws-solutions-architect` | `aws-solutions-architect` | 494 | SAA-C03 exam scenarios |
+
+See [`benchmark/README.md`](benchmark/README.md) for the full CLI reference and how to create new suites.
+
 ## Repository Structure
 
 ```
@@ -81,6 +102,16 @@ claude-code-digital-coworkers/
 ├── README.md
 ├── marketplace.json
 ├── CLAUDE.md
+├── benchmark/
+│   ├── README.md
+│   ├── benchmark.py
+│   ├── requirements.txt
+│   ├── tools/
+│   │   └── parse_questions.py
+│   └── suites/
+│       └── aws-solutions-architect/
+│           ├── suite.yaml
+│           └── questions.json
 └── plugins/
     ├── foundations/
     │   ├── .claude-plugin/plugin.json

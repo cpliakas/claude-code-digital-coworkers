@@ -38,6 +38,15 @@ A Claude Code plugin marketplace containing reusable agents and skills organized
 - If it needs to execute a procedure → skill
 - Agents use skills; skills don't use agents
 
+### Benchmarks
+- Generic harness lives in `benchmark/benchmark.py`
+- Domain-specific suites live in `benchmark/suites/<agent-name>/`
+- Each suite has a `suite.yaml` config file defining prompts, scoring, and dataset field mappings
+- Datasets are co-located with their suite
+- Results directories are gitignored
+- Prompt templates use Python `.format()` syntax (`{scenario}`, `{expected_answer}`, `{response}`)
+- Literal JSON braces in prompts must be doubled: `{{` and `}}`
+
 ### README
 - Keep README.md in sync with any changes to plugins, agents, or skills
 - The Plugins section tables must reflect current agent/skill names and descriptions
