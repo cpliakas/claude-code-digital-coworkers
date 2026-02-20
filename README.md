@@ -133,8 +133,9 @@ See [`benchmark/README.md`](benchmark/README.md) for the full CLI reference and 
 
 ```
 claude-code-digital-coworkers/
+├── .claude-plugin/
+│   └── marketplace.json
 ├── README.md
-├── marketplace.json
 ├── CLAUDE.md
 ├── benchmark/
 │   ├── README.md
