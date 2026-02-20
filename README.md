@@ -4,6 +4,36 @@
 
 A Claude Code plugin marketplace of reusable **digital coworkers** — specialist agents and skills that can be installed across projects. Each coworker brings generic domain expertise while accumulating project-specific memory on the job.
 
+## About This Project
+
+This is a personal learning project. Building agents, wiring them together, and watching where they break is how I develop intuition for what works and what doesn't. The agents here are opinionated to a specific stack and working style — they aren't designed for broad adoption.
+
+If you're looking for well-maintained, general-purpose collections of Claude Code agents and skills, these are better starting points:
+
+- [wshobson/agents](https://github.com/wshobson/agents) — curated agent library
+- [affaan-m/everything-claude-code](https://github.com/AffaanM/everything-claude-code) — comprehensive Claude Code resource collection
+- [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) — community-maintained subagent catalog
+
+## What Makes This Different
+
+### Team structure, not isolated specialists
+
+Most agent collections are flat lists — each agent is independent and self-contained. Here, agents are organized as a team with explicit roles, hierarchy, and delegation chains defined in their markdown files.
+
+The `cloud-infra` plugin illustrates this. `devops-lead` sets tool-agnostic principles (deployment strategies, observability requirements, IaC standards). `aws-solutions-architect` translates those principles into AWS-specific architecture decisions, consulting `devops-lead` to validate that its recommendations serve broader DevOps patterns. `cloudformation-specialist` implements what the architect specifies, consulting upstream when unsure whether a design choice (e.g., nested vs. separate stacks) is correct. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
+
+Across plugins, the same pattern holds at different levels: `product-owner` advises on sequencing and priorities but never implements — it's a consultative agent that checks proposed work against the roadmap. `qa-lead` owns the full test lifecycle and consults `security-engineer` for security-related tests. `security-engineer` doesn't delegate at all — it's a leaf node consulted by others during review cycles.
+
+### Benchmark harness for measurable agent quality
+
+Agent definitions are easy to write and hard to evaluate. The benchmark harness (`benchmark/benchmark.py`) provides a structured way to test whether an agent's knowledge and reasoning actually hold up.
+
+The approach is config-driven. Each benchmark is a **suite** — a `suite.yaml` that defines prompt templates, scoring criteria, and dataset field mappings, plus a dataset of question-answer pairs. The harness sends each scenario to the agent, then passes the agent's response to a separate LLM judge for scoring. No harness code changes are needed to add a new suite — you write a config file and a dataset.
+
+Two scoring modes exist today. **Binary** mode checks correctness: did the agent recommend the right AWS services for the scenario? **Dimensional** mode scores across multiple quality axes (answer accuracy, cost surfacing, specificity, pillar coverage, risk classification, structured format) on a 1-5 scale, with aggregate statistics and weakness keyword analysis.
+
+The current suite tests `aws-solutions-architect` against 494 SAA-C03 exam scenarios. The intention is to make this generic — a suite of benchmarks any agent can take — so there is a real validation loop rather than undifferentiated agent definitions. See [`benchmark/README.md`](benchmark/README.md) for the full CLI reference and how to create new suites.
+
 ## Quick Start
 
 Add the marketplace to your Claude Code project, then install the plugins you need:
