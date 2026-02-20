@@ -1,6 +1,6 @@
 # Claude Code Digital Coworkers
 
-> **Hypothesis**: Humans can elevate from individual contributor to manager of virtual teams by delegating to AI specialists that learn on the job.
+> **Hypothesis**: Similar to how public cloud redefined what one ops engineer could manage, AI agents may redefine what one IC can take on by delegating to digital specialists that learn on the job.
 
 A Claude Code plugin marketplace of reusable **digital coworkers**: specialist agents and skills that can be installed across projects. Each coworker brings generic domain expertise while accumulating project-specific memory on the job.
 
