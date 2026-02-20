@@ -1,0 +1,151 @@
+[
+  {
+    "service": "AWS KMS",
+    "category": "security-identity",
+    "one_liner": "Managed encryption key service for creating, controlling, and rotating cryptographic keys used to encrypt data across AWS services.",
+    "when_to_use": [
+      "Encrypt data at rest in S3, EBS, RDS, Aurora, DynamoDB, EFS, and other AWS services",
+      "Customer-managed keys (CMKs) when you need control over key policies, rotation, and audit trails",
+      "Automatic annual key rotation for compliance requirements",
+      "Envelope encryption: encrypt data keys with a KMS key, then use data keys to encrypt data locally",
+      "Encrypt secrets, credentials, and sensitive configuration data"
+    ],
+    "when_not_to_use": [
+      "Need to manage keys on-premises or in an HSM you fully control (use CloudHSM)",
+      "Simple encryption where AWS-managed keys are sufficient (SSE-S3 is simpler and free)",
+      "Client-side encryption where keys must never enter AWS (use your own key management)"
+    ],
+    "key_facts": [
+      "Key types: AWS-managed keys (created automatically by services, free), Customer-managed keys (you create and control, $1/month), AWS-owned keys (internal to AWS services, no visibility or cost).",
+      "Customer-managed keys: full control over key policy (who can use/manage), deletion scheduling (7-30 day waiting period), and CloudTrail audit logging of all key usage.",
+      "Automatic key rotation: enabled per key. Rotates the backing key material annually. Old material is retained for decryption of previously encrypted data. Only for symmetric keys.",
+      "Envelope encryption: KMS generates a data key, returns plaintext + encrypted versions. Application encrypts data with plaintext key, stores encrypted key alongside data. Decrypt by calling KMS to decrypt the data key.",
+      "Multi-Region keys: replicate keys across regions for cross-region encryption/decryption without cross-region API calls. Useful for DynamoDB Global Tables, S3 cross-region replication.",
+      "Key policies + IAM policies together control access. Key policy is the primary access control mechanism for KMS keys.",
+      "Grants: temporary, fine-grained permissions for a key without modifying key policy or IAM policy. Used by AWS services internally.",
+      "KMS keys never leave KMS unencrypted. All cryptographic operations happen within KMS HSMs (FIPS 140-2 Level 3 validated).",
+      "API call limits: varies by region (5,500-30,000 requests/second for symmetric operations). Can request increases.",
+      "Integrates natively with 80+ AWS services for encryption at rest."
+    ],
+    "pricing_summary": "Customer-managed keys: $1/month per key. API calls: $0.03/10,000 requests. AWS-managed keys: free (but API calls still apply). Multi-Region keys: $1/month per replica.",
+    "common_misconceptions": [
+      "KMS does NOT store your data. It stores and manages encryption keys. Data is encrypted by the service or application using keys from KMS.",
+      "SSE-KMS is NOT free. Customer-managed KMS keys cost $1/month and KMS API calls cost $0.03/10K. For cost-sensitive workloads, SSE-S3 (AWS-managed) is free.",
+      "KMS automatic rotation does NOT re-encrypt existing data. It only rotates the key material used for NEW encryptions. Old ciphertext is still decryptable using retained old key material.",
+      "Deleting a KMS key is NOT immediate. There is a mandatory 7-30 day waiting period to prevent accidental data loss. Once deleted, all data encrypted with that key becomes unrecoverable.",
+      "AWS-managed keys and customer-managed keys are DIFFERENT. AWS-managed keys cannot be rotated on custom schedules, cannot have custom key policies, and cannot be shared cross-account."
+    ],
+    "related_services": ["S3", "EBS", "RDS", "DynamoDB", "CloudHSM", "Secrets Manager", "CloudTrail", "ACM"]
+  },
+  {
+    "service": "AWS Secrets Manager",
+    "category": "security-identity",
+    "one_liner": "Managed service for storing, retrieving, and automatically rotating secrets such as database credentials, API keys, and tokens.",
+    "when_to_use": [
+      "Store and manage database credentials with automatic rotation (RDS, Aurora, Redshift, DocumentDB)",
+      "Replace hard-coded credentials in application code or configuration files",
+      "Automatic credential rotation on a schedule without application downtime",
+      "Cross-account secret sharing via resource-based policies",
+      "Multi-Region secret replication for disaster recovery and low-latency access"
+    ],
+    "when_not_to_use": [
+      "Simple configuration values that are not sensitive (use SSM Parameter Store free tier)",
+      "Encryption key management (use KMS directly)",
+      "Large binary secrets or certificates (use ACM for SSL/TLS certificates)"
+    ],
+    "key_facts": [
+      "Automatic rotation: built-in rotation Lambda functions for RDS (MySQL, PostgreSQL, Oracle, SQL Server, MariaDB), Aurora, Redshift, and DocumentDB. Custom rotation functions for other secret types.",
+      "Rotation uses a Lambda function that updates the secret AND the database password in a single atomic operation. Applications get the new credential on the next retrieval.",
+      "Multi-Region replication: replicate secrets across AWS regions. Replicas are read-only and stay in sync automatically. Useful for multi-region applications and DR.",
+      "Versioning: secrets have staging labels (AWSCURRENT, AWSPREVIOUS, AWSPENDING) to support seamless rotation without application downtime.",
+      "Resource-based policies: share secrets cross-account without creating IAM roles in the target account.",
+      "Integration: SDKs and CLI for retrieval. Caching clients available to reduce API calls and latency.",
+      "Encryption: all secrets encrypted at rest with KMS (AWS-managed or customer-managed key).",
+      "CloudTrail logging: all API calls (GetSecretValue, RotateSecret, etc.) are logged for audit.",
+      "Secrets Manager vs. SSM Parameter Store: Secrets Manager has native rotation, costs $0.40/secret/month. Parameter Store SecureString is cheaper ($0.05/10K API calls) but has no built-in rotation."
+    ],
+    "pricing_summary": "Per secret: $0.40/month per secret stored. API calls: $0.05/10,000 API calls. Rotation Lambda: standard Lambda pricing. No charge for replication.",
+    "common_misconceptions": [
+      "Secrets Manager is NOT the same as SSM Parameter Store. Secrets Manager has built-in automatic rotation and native database credential management. Parameter Store is cheaper but requires custom rotation logic.",
+      "Automatic rotation does NOT break applications IF you retrieve credentials on each use (not caching indefinitely). The SDK caching client handles rotation transparently.",
+      "Multi-Region replication keeps secrets in sync AUTOMATICALLY. You do NOT need to manually update secrets in each region.",
+      "Rotation does NOT require a maintenance window. The multi-user rotation strategy creates a new set of credentials while keeping the old ones active until the switch is complete."
+    ],
+    "related_services": ["RDS", "Aurora", "KMS", "Lambda", "SSM Parameter Store", "CloudTrail", "IAM"]
+  },
+  {
+    "service": "AWS Config",
+    "category": "security-identity",
+    "one_liner": "Continuously records and evaluates AWS resource configurations against desired rules for compliance auditing, change tracking, and security analysis.",
+    "when_to_use": [
+      "Track configuration changes to AWS resources over time (who changed what, when)",
+      "Compliance auditing: evaluate resources against rules (e.g., all S3 buckets must be encrypted, all EC2 instances must have tags)",
+      "Detect non-compliant resources and trigger automatic or manual remediation",
+      "Configuration history: view the timeline of changes for any resource",
+      "Multi-account/multi-region compliance with AWS Organizations integration (Config Aggregator)"
+    ],
+    "when_not_to_use": [
+      "Real-time API call logging and forensics (use CloudTrail)",
+      "Performance monitoring and metrics (use CloudWatch)",
+      "Cost optimization and billing analysis (use Cost Explorer, Budgets)"
+    ],
+    "key_facts": [
+      "Configuration recorder: continuously tracks configuration changes for supported AWS resources. Records the current state and all changes over time.",
+      "Config rules: evaluate whether resource configurations comply with your policies. AWS provides 300+ managed rules (e.g., s3-bucket-server-side-encryption-enabled, required-tags, rds-multi-az-support).",
+      "Custom rules: write your own compliance checks using Lambda functions or Guard policies.",
+      "Conformance packs: group related Config rules into a single deployable unit for organizational compliance frameworks (PCI DSS, HIPAA, CIS Benchmarks).",
+      "Remediation: automatically fix non-compliant resources using SSM Automation documents. Can be automatic or require manual approval.",
+      "Config Aggregator: aggregate compliance data from multiple accounts and regions into a single view. Works with AWS Organizations.",
+      "Configuration timeline: view the history of configuration changes for any resource, including relationships between resources.",
+      "Delivery channel: config snapshots and change notifications can be delivered to S3 and SNS.",
+      "Resource relationships: Config tracks dependencies between resources (e.g., which security group is attached to which EC2 instance).",
+      "Supports 200+ AWS resource types including EC2, S3, RDS, IAM, VPC, Lambda, and more."
+    ],
+    "pricing_summary": "Configuration items recorded: $0.003 per item. Config rule evaluations: $0.001 per evaluation. Conformance pack evaluations: $0.001 per evaluation. Storage in S3 for configuration history: standard S3 pricing.",
+    "common_misconceptions": [
+      "AWS Config is NOT CloudTrail. Config records the STATE of resources over time (configuration snapshots). CloudTrail records API CALLS (who did what). They are complementary.",
+      "Config rules do NOT prevent non-compliant changes. They DETECT and REPORT non-compliance. Use SCPs or IAM policies to prevent changes, and Config for detection and remediation.",
+      "Config is NOT free. It charges per configuration item recorded and per rule evaluation. For large accounts with many resources, costs can add up.",
+      "Managed rules cover most common compliance scenarios. You do NOT need to write custom Lambda rules for standard checks like encryption, tagging, or multi-AZ."
+    ],
+    "related_services": ["CloudTrail", "SSM Automation", "Organizations", "Security Hub", "Lambda", "SNS"]
+  },
+  {
+    "service": "AWS CloudTrail",
+    "category": "security-identity",
+    "one_liner": "Records all API calls and account activity across AWS services for governance, compliance auditing, operational troubleshooting, and security forensics.",
+    "when_to_use": [
+      "Audit who made what API call, when, and from where across all AWS services",
+      "Security investigation and forensics (detect unauthorized access, compromised credentials)",
+      "Compliance requirements for recording all AWS activity (SOX, PCI, HIPAA)",
+      "Trigger automated responses to specific API events (via EventBridge integration)",
+      "Operational troubleshooting: track resource changes to understand what happened"
+    ],
+    "when_not_to_use": [
+      "Track resource configuration state over time (use AWS Config)",
+      "Application-level logging (use CloudWatch Logs)",
+      "Performance metrics and alarms (use CloudWatch Metrics)"
+    ],
+    "key_facts": [
+      "Management events: logged by default for free (90-day history in CloudTrail Event History). Includes control plane operations like CreateBucket, RunInstances, CreateUser.",
+      "Data events: high-volume operations on data (S3 object-level operations, Lambda invocations, DynamoDB item-level operations). Must be explicitly enabled. Charged per event.",
+      "Trails: deliver events to S3 bucket and optionally to CloudWatch Logs. Can be single-region or multi-region (recommended). Organization trails cover all accounts.",
+      "CloudTrail Lake: managed data lake for querying CloudTrail events with SQL. Replaces the need to set up Athena queries on S3-stored logs.",
+      "Event history: free, 90-day view of management events in the AWS Console. No trail required.",
+      "CloudTrail Insights: automatically detects unusual API activity patterns (e.g., spike in RunInstances calls). Additional charge.",
+      "Integration with EventBridge: create rules to trigger actions based on specific API calls (e.g., alert when someone creates an IAM user, trigger remediation when a security group is modified).",
+      "Log file integrity validation: SHA-256 hash digest files verify that log files have not been modified or deleted.",
+      "Multi-account: organization trail in the management account captures events from all member accounts.",
+      "S3 log delivery: logs are delivered within 15 minutes of the API call. Not real-time."
+    ],
+    "pricing_summary": "Management events: first copy free, $2/100K events for additional copies. Data events: $0.10/100K events. CloudTrail Lake: $2.50/GB ingested, $0.005/GB scanned. Insights: $0.35/100K events analyzed.",
+    "common_misconceptions": [
+      "CloudTrail is NOT the same as AWS Config. CloudTrail logs API CALLS (actions). Config records resource STATES (configurations). Use both together for complete governance.",
+      "CloudTrail Event History provides 90 days of management events for FREE without creating a trail. You do NOT need to set up a trail for basic auditing.",
+      "Data events (S3 GetObject, PutObject) are NOT logged by default. You must explicitly enable them in a trail. This is a common exam question.",
+      "CloudTrail logs are NOT delivered in real-time. There is a delay of up to 15 minutes. For real-time event processing, use EventBridge with CloudTrail integration.",
+      "Organization trails automatically capture events from ALL member accounts. You do NOT need to configure trails in each individual account."
+    ],
+    "related_services": ["AWS Config", "EventBridge", "CloudWatch Logs", "S3", "Athena", "Organizations", "Security Hub"]
+  }
+]

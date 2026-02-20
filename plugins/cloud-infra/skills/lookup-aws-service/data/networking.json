@@ -1,0 +1,111 @@
+[
+  {
+    "service": "Amazon CloudFront",
+    "category": "networking",
+    "one_liner": "Global content delivery network (CDN) that caches content at 400+ edge locations for low-latency delivery of static and dynamic content.",
+    "when_to_use": [
+      "Accelerate delivery of static assets (images, CSS, JS) and dynamic content from any origin",
+      "Serve a static website hosted in S3 with HTTPS and a custom domain",
+      "Reduce load on origin servers (ALB, EC2, S3) by caching responses at the edge",
+      "Global audience needing low-latency access to applications or media",
+      "Protect origins with AWS WAF, Shield, and OAC (Origin Access Control) for S3"
+    ],
+    "when_not_to_use": [
+      "Accelerating uploads TO S3 from global locations (use S3 Transfer Acceleration)",
+      "TCP/UDP acceleration for non-HTTP protocols (use Global Accelerator)",
+      "Content that changes on every request with no cacheable components (though CloudFront can still proxy)"
+    ],
+    "key_facts": [
+      "Multiple origins: a single CloudFront distribution can route to different origins (S3, ALB, custom HTTP) using path-based or header-based behaviors.",
+      "Origin Access Control (OAC): restricts S3 bucket access to CloudFront only. Replaces the older Origin Access Identity (OAI). Supports SSE-KMS encrypted objects.",
+      "SSL/TLS: free SSL certificates via ACM for custom domains. Supports SNI-based HTTPS at no extra cost.",
+      "Cache behaviors: configure TTLs, query string forwarding, header forwarding, and cookie forwarding per path pattern.",
+      "Lambda@Edge: run Lambda functions at edge locations on viewer request/response and origin request/response events. Useful for A/B testing, URL rewrites, authentication.",
+      "CloudFront Functions: lightweight JavaScript functions for simple request/response transformations. Cheaper and faster than Lambda@Edge for simple tasks.",
+      "Field-level encryption: encrypt specific POST form fields at the edge before forwarding to origin.",
+      "Geo-restriction: block or allow content delivery to specific countries.",
+      "Real-time logs: stream access logs to Kinesis Data Streams for real-time analysis.",
+      "Signed URLs and signed cookies: restrict access to content to authorized users with time-limited URLs.",
+      "AWS Shield Standard is included at no extra cost. Shield Advanced and WAF can be attached for DDoS and application-layer protection."
+    ],
+    "pricing_summary": "Data transfer out: $0.085/GB (first 10 TB, US/Europe). Requests: $0.0100/10K HTTPS requests (US). No minimum commitment. Free tier: 1 TB data transfer + 10M requests/month for first 12 months.",
+    "common_misconceptions": [
+      "CloudFront is NOT just for static content. It accelerates dynamic content (API responses, personalized pages) by keeping persistent connections to origins and using the AWS backbone network.",
+      "CloudFront does NOT replace S3 Transfer Acceleration. CloudFront optimizes downloads FROM origin to users; Transfer Acceleration optimizes uploads FROM users to S3.",
+      "OAI (Origin Access Identity) is being replaced by OAC (Origin Access Control). OAC supports SSE-KMS, additional S3 features, and is the recommended approach.",
+      "CloudFront CAN serve as a reverse proxy without caching (TTL=0) for dynamic APIs while still providing edge termination and DDoS protection."
+    ],
+    "related_services": ["S3", "ALB", "ACM", "WAF", "Shield", "Lambda@Edge", "Route 53"]
+  },
+  {
+    "service": "Amazon Route 53",
+    "category": "networking",
+    "one_liner": "Highly available DNS service with health checking, traffic routing policies, and domain registration for global traffic management.",
+    "when_to_use": [
+      "DNS resolution for public and private hosted zones",
+      "Route traffic using weighted, latency-based, geolocation, geoproximity, failover, or multivalue routing policies",
+      "Health checks with automatic DNS failover for high availability",
+      "Domain name registration and management",
+      "Alias records to point to AWS resources (ELB, CloudFront, S3, API Gateway) without CNAME limitations"
+    ],
+    "when_not_to_use": [
+      "Content caching and edge delivery (use CloudFront)",
+      "TCP/UDP traffic acceleration (use Global Accelerator)",
+      "Application-layer load balancing (use ALB/NLB)"
+    ],
+    "key_facts": [
+      "Alias records: Route 53-specific record type that maps to AWS resources (ELB, CloudFront, S3 website, API Gateway, another Route 53 record). Free of charge for queries. Works at the zone apex (naked domain).",
+      "Routing policies: Simple (single resource), Weighted (percentage-based split), Latency (lowest latency region), Failover (active-passive), Geolocation (country/continent), Geoproximity (Traffic Flow bias), Multivalue (up to 8 healthy records).",
+      "Health checks: monitor endpoints, CloudWatch alarms, or other health checks. Unhealthy records are automatically removed from DNS responses.",
+      "Active-passive failover: primary record with health check + secondary record. Route 53 automatically routes to secondary when primary fails.",
+      "Active-active failover: multiple records with health checks using weighted or latency routing. Route 53 returns only healthy records.",
+      "Private hosted zones: DNS resolution within VPCs. Associate a hosted zone with one or more VPCs for internal DNS.",
+      "DNSSEC signing: supports DNSSEC for domain validation to protect against DNS spoofing.",
+      "100% availability SLA for DNS queries.",
+      "Traffic Flow: visual editor for complex routing configurations with versioning and rollback."
+    ],
+    "pricing_summary": "Hosted zone: $0.50/month. Queries: $0.40/million (standard), $0.60/million (latency-based, geolocation). Alias queries to AWS resources: free. Health checks: $0.50/month (basic), $0.75/month (with string matching).",
+    "common_misconceptions": [
+      "Alias records are NOT CNAMEs. Alias records resolve at the DNS level within Route 53 and work at the zone apex (e.g., example.com). CNAMEs cannot be used at the zone apex.",
+      "Route 53 does NOT provide DDoS protection by itself. Use Shield Advanced for DDoS protection on Route 53 hosted zones.",
+      "Failover routing requires health checks to be configured. Without health checks, Route 53 cannot detect failures and will continue routing to unhealthy endpoints.",
+      "Latency-based routing routes to the AWS REGION with lowest latency, not the individual server. The actual endpoint must be in that region."
+    ],
+    "related_services": ["CloudFront", "ELB", "Global Accelerator", "S3", "API Gateway", "Shield"]
+  },
+  {
+    "service": "AWS Global Accelerator",
+    "category": "networking",
+    "one_liner": "Network-layer service that routes TCP/UDP traffic through the AWS global network to regional endpoints for improved performance, availability, and failover.",
+    "when_to_use": [
+      "Non-HTTP protocols (gaming, IoT, VoIP) needing global performance optimization",
+      "Applications requiring static anycast IP addresses that do not change across regions or failovers",
+      "Multi-region active-active or active-passive architectures with instant failover (no DNS TTL wait)",
+      "UDP-based applications (use NLB as endpoint, not ALB)",
+      "Consistent global performance by entering the AWS backbone at the nearest edge location"
+    ],
+    "when_not_to_use": [
+      "Caching and serving static content (use CloudFront)",
+      "HTTP-only applications where CloudFront provides sufficient acceleration",
+      "Single-region applications without failover requirements"
+    ],
+    "key_facts": [
+      "Provides two static anycast IPv4 addresses. Traffic enters the AWS global network at the nearest edge location and is routed over the AWS backbone to the optimal endpoint.",
+      "Endpoints: ALB, NLB, EC2 instances, or Elastic IP addresses across multiple AWS Regions.",
+      "Health checking: continuously monitors endpoint health and automatically routes traffic away from unhealthy endpoints within seconds (not minutes like DNS failover).",
+      "Traffic dials: control the percentage of traffic directed to each endpoint group (region). Useful for blue/green deployments.",
+      "Client affinity: optionally route requests from the same client IP to the same endpoint for stateful applications.",
+      "Works with NLB for UDP traffic. CloudFront does not support UDP.",
+      "Failover is instant (based on health checks and network monitoring) compared to DNS-based failover which depends on TTL expiration.",
+      "Supports AWS Shield Advanced for DDoS protection on the static IP addresses."
+    ],
+    "pricing_summary": "Fixed fee: $0.025/hour per accelerator (~$18/month). Data transfer: $0.015-$0.090/GB depending on region and destination. No additional charge for health checks.",
+    "common_misconceptions": [
+      "Global Accelerator is NOT a CDN. It does NOT cache content. It optimizes the network path. For content caching, use CloudFront.",
+      "Global Accelerator provides INSTANT failover (seconds), unlike Route 53 which depends on DNS TTL propagation (could take minutes).",
+      "Global Accelerator works with UDP via NLB endpoints. This is a key differentiator from CloudFront, which only supports HTTP/HTTPS/WebSocket.",
+      "Static IPs from Global Accelerator remain the same even when you add/remove endpoints or change regions behind them. No DNS changes needed."
+    ],
+    "related_services": ["CloudFront", "Route 53", "NLB", "ALB", "Shield Advanced"]
+  }
+]

@@ -1,0 +1,109 @@
+[
+  {
+    "service": "Amazon RDS Storage and SQL Server",
+    "category": "database",
+    "one_liner": "Managed relational database service with gp2/gp3 storage tiers and full SQL Server engine support including read replicas.",
+    "when_to_use": [
+      "Need a managed relational database with standard SQL engines (MySQL, PostgreSQL, MariaDB, Oracle, SQL Server)",
+      "SQL Server workloads that need read replicas for read scaling",
+      "Workloads needing predictable IOPS with gp3 or burstable IOPS with gp2",
+      "Applications that need automated backups, patching, and Multi-AZ failover"
+    ],
+    "when_not_to_use": [
+      "Need global cross-region replication with sub-second RPO (use Aurora Global Database)",
+      "Need serverless auto-scaling database (use Aurora Serverless v2)",
+      "Key-value or document access patterns at massive scale (use DynamoDB)",
+      "Need full OS-level control over the database server (use EC2 self-managed)"
+    ],
+    "key_facts": [
+      "gp2 storage: baseline of 3 IOPS per GB, minimum 100 IOPS, burst up to 3,000 IOPS for volumes under 1TB. Volumes of 1TB+ get 3,000+ baseline IOPS (no burst needed).",
+      "gp3 storage: baseline 3,000 IOPS and 125 MiB/s throughput regardless of volume size. Can provision up to 16,000 IOPS and 1,000 MiB/s independently.",
+      "RDS for SQL Server DOES support read replicas (added 2022). Supported for SQL Server 2016 SP2 CU8+ and later, Enterprise Edition.",
+      "SQL Server read replicas use native SQL Server Always On technology under the hood.",
+      "Multi-AZ for SQL Server uses Always On Availability Groups (SQL Server 2017+) or Database Mirroring (older versions).",
+      "RDS supports storage auto-scaling: automatically increases storage when usage exceeds threshold.",
+      "Maximum storage: 64 TiB for most engines, 16 TiB for SQL Server."
+    ],
+    "pricing_summary": "Instance hours (varies by instance class and engine) + storage (gp2: $0.115/GB/month, gp3: $0.08/GB/month + provisioned IOPS/throughput). SQL Server has license costs included in instance pricing. Multi-AZ doubles instance and storage costs.",
+    "common_misconceptions": [
+      "RDS SQL Server DOES have managed read replicas. This was added in 2022 and is commonly overlooked.",
+      "gp2 is NOT always slower than gp3. For volumes under 1TB, gp2 can burst to 3,000 IOPS. For steady-state workloads, gp3 provides 3,000 baseline IOPS at lower cost.",
+      "You do NOT need Provisioned IOPS (io1/io2) for 3,000 IOPS. Both gp2 (via burst) and gp3 (baseline) provide this.",
+      "RDS storage auto-scaling does NOT require manual intervention. It automatically increases storage when free space drops below 10%."
+    ],
+    "related_services": ["Aurora", "Aurora Serverless v2", "RDS Proxy", "DynamoDB", "ElastiCache"]
+  },
+  {
+    "service": "Amazon DynamoDB Native Features",
+    "category": "database",
+    "one_liner": "DynamoDB includes built-in export-to-S3, point-in-time recovery, Streams, and global tables with no custom code required.",
+    "when_to_use": [
+      "Need to export DynamoDB table data to S3 for analytics (use native export, not custom Lambda pipeline)",
+      "Need continuous backups with point-in-time recovery (PITR) to any second in the last 35 days",
+      "Need change data capture for downstream processing (DynamoDB Streams)",
+      "Need multi-region active-active database (Global Tables)",
+      "Need TTL-based automatic data expiration"
+    ],
+    "when_not_to_use": [
+      "Need real-time streaming to non-AWS destinations (consider Kinesis Data Streams with DynamoDB integration)",
+      "Need complex SQL joins across tables (use a relational database)",
+      "Export needs to be real-time continuous (Streams + Lambda for near-real-time; native export is a point-in-time batch)"
+    ],
+    "key_facts": [
+      "Native Export to S3: zero-code, zero-capacity export of full table data to S3 in DynamoDB JSON or Amazon Ion format. Does NOT consume read capacity. Uses PITR backup as source.",
+      "Point-in-Time Recovery (PITR): continuous backups with restore to any second in the last 35 days. Restores to a new table.",
+      "DynamoDB Streams: ordered, time-series log of every item-level change (insert, update, delete). Integrates with Lambda, Kinesis Data Streams, and Kinesis Client Library.",
+      "Global Tables: multi-region, multi-active replication with sub-second replication latency. All regions accept writes.",
+      "TTL: automatically deletes expired items at no cost. Deletion is eventually consistent (items may persist up to 48 hours past TTL).",
+      "On-demand backup: full table backup that can be retained indefinitely. Restores to a new table.",
+      "Import from S3: load data from S3 into a new DynamoDB table without writing custom code."
+    ],
+    "pricing_summary": "Export to S3: $0.11 per GB exported. PITR: $0.20 per GB per month. Streams: no additional charge for DynamoDB Streams reads; Lambda triggers have standard Lambda pricing. Global Tables: replicated write capacity is charged in each replicated region.",
+    "common_misconceptions": [
+      "DynamoDB HAS native export to S3. You do NOT need to build a Lambda scan-and-write pipeline. The native export uses PITR and does not consume table read capacity.",
+      "PITR restores to a NEW table, not in-place. Plan for table rename or application pointer update after restore.",
+      "DynamoDB Streams is NOT the same as Kinesis Data Streams. Streams is built into DynamoDB with 24-hour retention. Kinesis integration is an alternative with longer retention and broader consumer support.",
+      "Global Tables replication is NOT instant. Sub-second typical, but conflict resolution is last-writer-wins."
+    ],
+    "related_services": ["S3", "Lambda", "Kinesis Data Streams", "AWS Backup", "Athena", "Glue"]
+  },
+  {
+    "service": "Amazon Aurora",
+    "category": "database",
+    "one_liner": "MySQL/PostgreSQL-compatible managed relational database with up to 5x MySQL and 3x PostgreSQL performance, automatic storage scaling, and multi-region Global Database.",
+    "when_to_use": [
+      "MySQL or PostgreSQL workloads needing higher performance and availability than standard RDS",
+      "Read-heavy workloads that benefit from up to 15 low-latency read replicas with automatic scaling",
+      "Applications needing automatic storage scaling (up to 128 TB) without manual provisioning",
+      "Multi-region disaster recovery or global reads with sub-second cross-region replication (Global Database)",
+      "Variable or unpredictable workloads where serverless auto-scaling is preferred (Aurora Serverless v2)"
+    ],
+    "when_not_to_use": [
+      "Non-relational access patterns at massive scale (use DynamoDB)",
+      "Need Oracle, SQL Server, or MariaDB engine support (use RDS)",
+      "Budget-sensitive workloads where standard RDS performance is sufficient (Aurora has a ~20% price premium)",
+      "Need full OS-level control (use EC2 self-managed database)"
+    ],
+    "key_facts": [
+      "Storage: automatically grows from 10 GB to 128 TB in 10 GB increments. 6 copies of data across 3 AZs. Self-healing and continuously backed up to S3.",
+      "Read replicas: up to 15 Aurora Replicas with <20ms replication lag. Aurora Auto Scaling can add/remove replicas based on CloudWatch metrics (CPU, connections).",
+      "Failover: automatic failover to a read replica in <30 seconds. Faster than standard RDS Multi-AZ failover.",
+      "Aurora Serverless v2: scales compute capacity continuously between a minimum and maximum ACU (Aurora Capacity Units). Scales in fractions of ACUs. Ideal for variable, intermittent, or unpredictable workloads.",
+      "Aurora Global Database: replicates across up to 5 secondary regions with <1 second replication lag. Supports managed planned failover (switchover) and unplanned failover (disaster recovery). RPO of ~1 second.",
+      "Backtrack: rewind the database to a specific point in time without restoring from a backup (MySQL-compatible only). Faster than point-in-time recovery.",
+      "Cloning: create a full copy of an Aurora database in seconds using copy-on-write. No additional storage cost until data diverges. Useful for testing.",
+      "Parallel Query: pushes query processing to the storage layer for analytical queries on operational data without needing a separate analytics database.",
+      "Multi-Master (deprecated in favor of Aurora Global Database and writer endpoint): allowed multiple write instances.",
+      "Compatible with existing MySQL 5.7/8.0 and PostgreSQL 13/14/15/16 applications with minimal changes."
+    ],
+    "pricing_summary": "Instance hours: varies by instance class (e.g., db.r6g.large ~$0.26/hour). Storage: $0.10/GB/month. I/O: $0.20/million requests. Aurora Serverless v2: $0.12/ACU-hour. Global Database: cross-region replicated I/O charges apply.",
+    "common_misconceptions": [
+      "Aurora IS MySQL/PostgreSQL compatible. You can use existing MySQL or PostgreSQL drivers, tools, and applications with minimal changes.",
+      "Aurora Replicas are NOT the same as RDS read replicas. Aurora Replicas share the same underlying storage volume, providing <20ms replication lag vs. seconds for RDS read replicas.",
+      "Aurora Serverless v2 CAN scale to zero (0 ACUs) but only with auto-pause enabled, and it takes time to resume. For instant availability, set a minimum ACU > 0.",
+      "Aurora Auto Scaling for read replicas is built-in. You do NOT need to manually add replicas when read load increases.",
+      "Aurora Global Database failover promotes a secondary region, not a read replica. The process involves detaching the secondary and promoting it to a standalone cluster."
+    ],
+    "related_services": ["RDS", "DynamoDB", "ElastiCache", "RDS Proxy", "CloudWatch"]
+  }
+]

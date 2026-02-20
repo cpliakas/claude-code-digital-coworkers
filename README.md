@@ -76,6 +76,7 @@ Cloud infrastructure agents covering DevOps strategy, AWS architecture, and Clou
 | Agent | `devops-lead` | Infrastructure team lead for CI/CD, deployment strategies, and environment management |
 | Agent | `aws-solutions-architect` | AWS Well-Architected Framework specialist for service selection, cost optimization, and security posture |
 | Agent | `cloudformation-specialist` | CF template authoring covering stack lifecycle, drift detection, and nested stacks |
+| Skill | `/lookup-aws-service` | Look up AWS service capability cards for service selection decisions |
 | Skill | `/cf-lint` | Validate a CloudFormation template against best practices and common errors |
 | Skill | `/well-architected-review` | Evaluate infrastructure changes against all 6 Well-Architected pillars |
 
@@ -117,6 +118,9 @@ python3 benchmark.py suites/aws-solutions-architect --dry-run --sample 3
 
 # Run direct mode on 20 random questions
 python3 benchmark.py suites/aws-solutions-architect --mode direct --sample 20
+
+# Run with tool use enabled (agent can look up AWS service capabilities)
+python3 benchmark.py suites/aws-solutions-architect --mode reasoning --tools --sample 20
 ```
 
 | Suite | Agent | Questions | Description |
@@ -165,6 +169,13 @@ claude-code-digital-coworkers/
         │   └── cloudformation-specialist.md
         └── skills/
             ├── cf-lint/SKILL.md
+            ├── lookup-aws-service/
+            │   ├── SKILL.md
+            │   └── data/
+            │       ├── compute.json
+            │       ├── database.json
+            │       ├── storage.json
+            │       └── ... (10 category files)
             └── well-architected-review/SKILL.md
 ```
 

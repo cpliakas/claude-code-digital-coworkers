@@ -1,0 +1,144 @@
+[
+  {
+    "service": "Amazon EKS",
+    "category": "compute",
+    "one_liner": "Managed Kubernetes service with native KMS envelope encryption for secrets and EKS Connector for managing external clusters.",
+    "when_to_use": [
+      "Running containerized workloads that need Kubernetes orchestration",
+      "Multi-cluster management including on-premises or other-cloud Kubernetes clusters (EKS Connector)",
+      "Need native Kubernetes secrets encryption at rest with KMS (envelope encryption)",
+      "Teams with existing Kubernetes expertise and tooling"
+    ],
+    "when_not_to_use": [
+      "Simple containerized applications without Kubernetes expertise (use ECS or Fargate)",
+      "Event-driven functions without container requirements (use Lambda)",
+      "Single-container applications with minimal orchestration needs (use App Runner)"
+    ],
+    "key_facts": [
+      "EKS Connector: register and manage external Kubernetes clusters (on-premises, other clouds, EKS Anywhere) from the EKS console. Provides unified visibility without migrating workloads.",
+      "Native KMS envelope encryption for Kubernetes secrets: EKS can encrypt secrets stored in etcd using a KMS customer-managed key. No need for external secrets managers for basic secrets-at-rest encryption.",
+      "Supports Fargate profiles for serverless pod execution (no EC2 node management)",
+      "Supports managed node groups with automatic AMI updates and node health monitoring",
+      "EKS Add-ons: managed installation of common components (CoreDNS, kube-proxy, VPC CNI, EBS CSI driver)",
+      "Control plane is managed and runs across multiple AZs automatically",
+      "Supports IAM Roles for Service Accounts (IRSA) for fine-grained pod-level IAM permissions"
+    ],
+    "pricing_summary": "EKS cluster: $0.10/hour ($73/month). Worker nodes: EC2 or Fargate pricing. EKS Connector: no additional charge. KMS: $1/month per key + $0.03/10K API calls.",
+    "common_misconceptions": [
+      "EKS CAN manage non-AWS Kubernetes clusters via EKS Connector. You do NOT need to migrate workloads to AWS to get unified Kubernetes management.",
+      "EKS HAS native KMS envelope encryption for Kubernetes secrets. You do NOT need HashiCorp Vault or AWS Secrets Manager CSI driver just for secrets-at-rest encryption.",
+      "EKS Fargate is NOT the same as ECS Fargate. EKS Fargate runs Kubernetes pods serverlessly; ECS Fargate runs ECS tasks serverlessly. Different orchestrators, same underlying compute.",
+      "IRSA (IAM Roles for Service Accounts) eliminates the need to share a single node IAM role across all pods."
+    ],
+    "related_services": ["ECS", "Fargate", "App Runner", "KMS", "EKS Anywhere", "ECR"]
+  },
+  {
+    "service": "EC2 Hibernation and Auto Scaling Warm Pools",
+    "category": "compute",
+    "one_liner": "EC2 hibernation preserves in-memory state to EBS for fast resume; Auto Scaling warm pools keep pre-initialized instances ready to serve traffic.",
+    "when_to_use": [
+      "Applications with long initialization times (loading ML models, warming caches, JVM startup) that need fast scale-out",
+      "Development/test instances that should pause overnight and resume with full state",
+      "Workloads where cold-start latency is unacceptable but instances should not run 24/7",
+      "Auto Scaling groups that need to respond faster than fresh instance launch allows"
+    ],
+    "when_not_to_use": [
+      "Stateless workloads that start quickly (standard Auto Scaling is sufficient)",
+      "Instances with more than 150 GB of RAM (hibernation limit)",
+      "Workloads on instance store volumes (hibernation requires EBS root volume)",
+      "Applications that do not benefit from preserving in-memory state"
+    ],
+    "key_facts": [
+      "EC2 Hibernation: saves RAM contents to the encrypted EBS root volume, stops the instance, and restores full memory state on resume. Applications see it as a suspend/resume, not a restart.",
+      "Hibernation requires an encrypted EBS root volume large enough to hold the RAM contents.",
+      "Supported on many instance types (M, C, R, T families) up to 150 GB RAM.",
+      "Auto Scaling Warm Pools: maintain a pool of pre-initialized stopped (or hibernated) instances. When the ASG scales out, warm pool instances start (or resume) much faster than launching new instances.",
+      "Warm pool instances can be in Stopped, Running, or Hibernated state. Stopped instances pay only for EBS storage. Hibernated instances also pay only for EBS storage.",
+      "Warm pool lifecycle hooks let you run initialization scripts before an instance enters the warm pool.",
+      "Warm pools integrate with Auto Scaling group scaling policies seamlessly."
+    ],
+    "pricing_summary": "Hibernated/stopped instances: no compute charge, only EBS storage costs. Warm pool instances in Stopped state: EBS storage only. Running warm pool instances: full EC2 pricing. Significant savings vs. keeping instances running 24/7.",
+    "common_misconceptions": [
+      "Hibernation is NOT the same as stop/start. Stop/start loses all RAM state; hibernation preserves it. Applications resume exactly where they left off.",
+      "Warm pools are NOT pre-warmed load balancer connections. They are pre-initialized EC2 instances in stopped/hibernated state ready to join the ASG.",
+      "Golden AMIs do NOT solve the same problem as warm pools. AMIs speed up provisioning but applications still need runtime initialization (cache warming, model loading). Warm pools preserve that initialized state."
+    ],
+    "related_services": ["EC2 Auto Scaling", "EBS", "EC2 Image Builder", "Launch Templates"]
+  },
+  {
+    "service": "AWS Elastic Beanstalk",
+    "category": "compute",
+    "one_liner": "Fully managed application deployment platform that handles capacity provisioning, load balancing, auto-scaling, and health monitoring for web applications.",
+    "when_to_use": [
+      "Web applications in supported platforms (Java/Tomcat, .NET, Node.js, Python, Ruby, Go, PHP, Docker)",
+      "Teams that want managed infrastructure without container orchestration complexity",
+      "Applications that need rolling deployments, blue/green deployments, or immutable updates out of the box",
+      "Java/Tomcat applications that need simple HA deployment with minimal configuration"
+    ],
+    "when_not_to_use": [
+      "Microservices architectures needing fine-grained container orchestration (use ECS or EKS)",
+      "Event-driven serverless workloads (use Lambda)",
+      "Applications requiring custom AMIs or instance-level OS configuration beyond .ebextensions",
+      "Workloads with very specific networking requirements"
+    ],
+    "key_facts": [
+      "Supports platforms: Java SE, Tomcat, .NET on Windows/Linux, Node.js, Python, Ruby, Go, PHP, Docker (single and multi-container), and custom platforms",
+      "Manages underlying EC2 instances, Auto Scaling groups, ELB, CloudWatch alarms, and security groups automatically",
+      "Deployment policies: All at once, Rolling, Rolling with additional batch, Immutable, Blue/Green (via environment swap)",
+      "Managed platform updates: automatically applies OS and platform patches during maintenance windows",
+      "Full access to underlying AWS resources (you are not locked in; can customize via .ebextensions or saved configurations)",
+      "Environment tiers: Web Server (handles HTTP) and Worker (processes background jobs from SQS)",
+      "Supports Multi-AZ deployments with load balancing by default",
+      "No additional charge for Elastic Beanstalk itself. You pay only for the underlying AWS resources."
+    ],
+    "pricing_summary": "No Elastic Beanstalk fee. You pay for EC2 instances, ELB, EBS, and other resources provisioned. Comparable cost to manually provisioned infrastructure with significantly less operational overhead.",
+    "common_misconceptions": [
+      "Elastic Beanstalk is NOT a PaaS that locks you in. You have full access to EC2, ASGs, and ELB underneath. You can SSH into instances and customize via .ebextensions.",
+      "Beanstalk is NOT outdated or deprecated. It receives regular platform updates and supports current language runtimes.",
+      "For a Java/Tomcat application needing HA and rolling deployments, Beanstalk is simpler than ECS+Fargate. ECS adds container orchestration complexity that Beanstalk handles natively for supported platforms.",
+      "Beanstalk Worker tier processes SQS messages natively. No need to write SQS polling code in your application."
+    ],
+    "related_services": ["EC2", "ECS", "Fargate", "App Runner", "CloudFormation", "CodePipeline"]
+  },
+  {
+    "service": "AWS Lambda",
+    "category": "compute",
+    "one_liner": "Serverless compute that runs code in response to events with automatic scaling, no server management, and pay-per-invocation pricing.",
+    "when_to_use": [
+      "Event-driven processing: S3 uploads, DynamoDB Streams, SQS messages, API Gateway requests, CloudWatch Events",
+      "Short-duration tasks (up to 15 minutes) that do not require persistent state",
+      "APIs behind API Gateway with variable or unpredictable traffic (including zero traffic periods)",
+      "Data transformation, ETL, log processing, or real-time file processing",
+      "Asynchronous background tasks triggered by application events"
+    ],
+    "when_not_to_use": [
+      "Long-running processes exceeding 15 minutes (use ECS, Fargate, or Step Functions)",
+      "Workloads requiring consistent high throughput with predictable load (EC2 or containers may be more cost-effective)",
+      "Applications needing full OS control, GPU access, or custom runtimes beyond Lambda layers",
+      "Stateful applications requiring persistent local storage or in-memory state across invocations"
+    ],
+    "key_facts": [
+      "Maximum execution timeout: 15 minutes. For longer workflows, chain with Step Functions or use containers.",
+      "Memory: 128 MB to 10,240 MB (10 GB). CPU scales proportionally with memory allocation.",
+      "Concurrency: default 1,000 concurrent executions per region (soft limit, can be increased). Reserved concurrency guarantees capacity for critical functions.",
+      "Provisioned concurrency: pre-initializes execution environments to eliminate cold starts. Useful for latency-sensitive workloads.",
+      "Event source mappings: polls SQS, Kinesis, DynamoDB Streams, and Kafka for records and invokes Lambda with batches.",
+      "Lambda@Edge and CloudFront Functions: run code at CloudFront edge locations for request/response manipulation.",
+      "Supports runtimes: Node.js, Python, Java, .NET, Go, Ruby, and custom runtimes via Lambda layers or container images.",
+      "Lambda can run container images up to 10 GB. Useful for large dependencies or existing Docker-based workflows.",
+      "Asynchronous invocation: Lambda retries failed invocations twice. Dead-letter queues (SQS) or on-failure destinations capture failures.",
+      "Lambda Destinations: route asynchronous invocation results (success or failure) to SQS, SNS, Lambda, or EventBridge without custom code.",
+      "VPC-attached Lambda: can access resources in a VPC (RDS, ElastiCache). Uses Hyperplane ENIs for fast networking with no cold start penalty.",
+      "Environment variables, KMS encryption, and IAM execution roles provide secure configuration and least-privilege access."
+    ],
+    "pricing_summary": "Pay per request ($0.20/1M requests) + compute duration ($0.0000166667/GB-second). Free tier: 1M requests + 400,000 GB-seconds per month. No charge when not running.",
+    "common_misconceptions": [
+      "Lambda is NOT limited to small tasks. With 10 GB memory and 15-minute timeout, it can handle substantial workloads including ML inference and data processing.",
+      "Cold starts are NOT a problem for most workloads. VPC-attached Lambda no longer has slow cold starts (fixed in 2019). For latency-critical APIs, use provisioned concurrency.",
+      "Lambda DOES support containers. You can package functions as Docker container images up to 10 GB.",
+      "Lambda is NOT always cheaper than EC2. For sustained high-throughput workloads running 24/7, EC2 or Fargate may be more cost-effective. Lambda excels at variable/spiky/low-traffic patterns.",
+      "SQS-triggered Lambda handles failures automatically via visibility timeout and dead-letter queues. Failed messages return to the queue for retry without custom retry logic."
+    ],
+    "related_services": ["API Gateway", "SQS", "SNS", "DynamoDB Streams", "S3", "EventBridge", "Step Functions", "CloudFront"]
+  }
+]

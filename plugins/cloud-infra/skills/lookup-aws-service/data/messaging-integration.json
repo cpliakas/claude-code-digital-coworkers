@@ -1,0 +1,115 @@
+[
+  {
+    "service": "Amazon SNS FIFO Topics",
+    "category": "messaging-integration",
+    "one_liner": "Ordered, deduplicated pub/sub messaging that fans out to multiple SQS FIFO queues or other subscribers with strict message ordering.",
+    "when_to_use": [
+      "Need ordered, exactly-once message fanout to multiple consumers",
+      "Event-driven architectures requiring strict ordering guarantees across multiple subscribers",
+      "Financial transactions, inventory updates, or other workflows where message order matters",
+      "Replacing point-to-point ordered queues with ordered pub/sub patterns"
+    ],
+    "when_not_to_use": [
+      "High-throughput scenarios exceeding 300 messages/second per message group (use standard SNS + application-level ordering)",
+      "Subscribers that do not need ordering guarantees (use standard SNS topics for higher throughput)",
+      "Streaming data ingestion (use Kinesis Data Streams)"
+    ],
+    "key_facts": [
+      "SNS FIFO topics deliver messages in strict order within a message group, with exactly-once processing via deduplication.",
+      "Can fan out directly to multiple SQS FIFO queue subscriptions. You do NOT need a single SQS queue to receive and re-distribute.",
+      "Supports up to 300 messages/second (or 10 MB/second) per FIFO topic, with up to 3,000 messages/second with batching.",
+      "Message groups allow parallel processing of independent message streams while maintaining order within each group.",
+      "Content-based deduplication or explicit deduplication IDs prevent duplicate delivery.",
+      "Currently supports SQS FIFO queues as subscribers. Does not support Lambda, HTTP, or email subscriptions directly (route through SQS FIFO to Lambda).",
+      "Topic name must end with .fifo suffix."
+    ],
+    "pricing_summary": "SNS FIFO: $0.50 per million published messages + $0.06 per million subscription deliveries. SQS FIFO subscribers: standard SQS FIFO pricing applies.",
+    "common_misconceptions": [
+      "SNS FIFO CAN fan out to multiple subscribers directly. You do NOT need a single SQS FIFO queue with Lambda to re-distribute messages to other queues.",
+      "SNS FIFO ordering is per message group, NOT per topic. Different message groups can be processed in parallel.",
+      "SNS FIFO does NOT support all subscription protocols. Currently limited to SQS FIFO queues as subscribers.",
+      "FIFO topics and Standard topics are different resources. You cannot convert between them after creation."
+    ],
+    "related_services": ["SQS FIFO", "SNS Standard", "EventBridge", "Kinesis Data Streams"]
+  },
+  {
+    "service": "Amazon SQS",
+    "category": "messaging-integration",
+    "one_liner": "Fully managed message queuing service with Standard (at-least-once, best-effort ordering) and FIFO (exactly-once, strict ordering) queue types for decoupling distributed systems.",
+    "when_to_use": [
+      "Decouple producers from consumers to handle traffic spikes without data loss",
+      "Buffer writes to a database or downstream service that cannot handle peak throughput",
+      "Work queue pattern: distribute tasks across a fleet of workers with Auto Scaling based on queue depth",
+      "Ensure reliable message delivery with automatic retries and dead-letter queues for failed processing",
+      "Order processing, job queuing, or any asynchronous workflow needing durable message storage"
+    ],
+    "when_not_to_use": [
+      "Fan-out to multiple subscribers (use SNS for pub/sub, then subscribe SQS queues to SNS topic)",
+      "Real-time streaming with replay capability (use Kinesis Data Streams)",
+      "Event routing with content-based filtering across many targets (use EventBridge)",
+      "Request/response or synchronous communication patterns"
+    ],
+    "key_facts": [
+      "Standard queues: at-least-once delivery, best-effort ordering, nearly unlimited throughput. Messages may be delivered more than once or out of order.",
+      "FIFO queues: exactly-once processing, strict ordering within message groups. Throughput: 300 messages/second (3,000 with batching) per queue without high-throughput mode. High-throughput FIFO mode supports up to 70,000 messages/second.",
+      "FIFO queue names must end with .fifo suffix.",
+      "Message retention: 1 minute to 14 days (default 4 days).",
+      "Maximum message size: 256 KB. For larger payloads, use SQS Extended Client Library to store payload in S3.",
+      "Visibility timeout: when a consumer receives a message, it becomes invisible to other consumers for a configurable period (default 30 seconds). If not deleted within that period, it becomes visible again for reprocessing.",
+      "Dead-letter queues (DLQ): messages that fail processing after maxReceiveCount attempts are automatically moved to a DLQ for investigation.",
+      "Long polling (WaitTimeSeconds > 0): reduces empty responses and API costs by waiting for messages to arrive. Always prefer long polling over short polling.",
+      "Lambda integration: SQS can trigger Lambda functions via event source mappings. Lambda automatically handles polling, batching, and scaling.",
+      "Auto Scaling integration: use ApproximateNumberOfMessagesVisible metric to scale EC2 worker fleets based on queue depth.",
+      "Server-side encryption: supports SSE-SQS (AWS-managed) or SSE-KMS (customer-managed keys).",
+      "SNS-to-SQS fan-out: subscribe multiple SQS queues to a single SNS topic for parallel processing by different consumers."
+    ],
+    "pricing_summary": "Standard: $0.40 per million requests. FIFO: $0.50 per million requests. First 1M requests/month free. Requests include Send, Receive, Delete, and other API actions. Each 64 KB chunk counts as one request.",
+    "common_misconceptions": [
+      "SQS Standard does NOT guarantee message ordering. If ordering matters, use FIFO queues with message group IDs.",
+      "SQS is NOT pub/sub. It is point-to-point (one consumer per message). For fan-out, put SNS in front of multiple SQS queues.",
+      "SQS messages are NOT automatically deleted after reading. The consumer MUST explicitly delete the message after successful processing, or it will reappear after the visibility timeout.",
+      "DLQ is NOT automatic. You must explicitly configure a redrive policy with maxReceiveCount on the source queue.",
+      "FIFO ordering is per message group, NOT per queue. Different message group IDs can be processed in parallel while maintaining order within each group.",
+      "SQS-triggered Lambda scales automatically. Each batch of messages is processed by a separate Lambda invocation, and Lambda manages polling concurrency."
+    ],
+    "related_services": ["SNS", "Lambda", "EventBridge", "Step Functions", "EC2 Auto Scaling", "API Gateway"]
+  },
+  {
+    "service": "Amazon EventBridge",
+    "category": "messaging-integration",
+    "one_liner": "Serverless event bus that routes events from AWS services, SaaS applications, and custom sources to targets using content-based filtering rules.",
+    "when_to_use": [
+      "React to AWS service events (EC2 state changes, S3 events, API calls via CloudTrail, CodePipeline status changes)",
+      "Build event-driven architectures with decoupled producers and consumers",
+      "Route events from SaaS partners (Zendesk, Datadog, Auth0, Shopify) into AWS workflows",
+      "Content-based filtering: route events to different targets based on event attributes without custom code",
+      "Schedule-based automation (cron or rate expressions) as a replacement for CloudWatch Events scheduled rules"
+    ],
+    "when_not_to_use": [
+      "High-throughput streaming data ingestion (use Kinesis Data Streams)",
+      "Simple message queuing with guaranteed ordering (use SQS FIFO)",
+      "Point-to-point message delivery with visibility timeout (use SQS)"
+    ],
+    "key_facts": [
+      "EventBridge is the evolution of CloudWatch Events. Same underlying service with expanded features (schema registry, SaaS integrations, custom event buses).",
+      "Event buses: default bus (AWS service events), custom buses (application events), and partner buses (SaaS integrations).",
+      "Rules: match events using event patterns (JSON-based filter on event attributes) and route to one or more targets.",
+      "Targets include: Lambda, SQS, SNS, Step Functions, Kinesis, CodePipeline, ECS tasks, API Gateway, and more (over 20 target types).",
+      "Content-based filtering: rules can filter on any field in the event JSON, including nested fields, numeric matching, prefix/suffix matching, and exists checks.",
+      "Schema Registry: automatically discovers and stores event schemas. Generates code bindings for Java, Python, and TypeScript.",
+      "Archive and Replay: archive events and replay them for debugging, testing, or reprocessing failed events.",
+      "Scheduler: fully managed scheduling with cron and rate expressions, one-time schedules, and flexible time windows. Replaces CloudWatch Events scheduling.",
+      "Cross-account and cross-region event delivery: send events between AWS accounts and regions for centralized event processing.",
+      "Guaranteed at-least-once event delivery. Events are durably stored before delivery to targets.",
+      "Pipes: point-to-point integrations from source to target with optional filtering and enrichment (e.g., SQS to Step Functions with Lambda enrichment)."
+    ],
+    "pricing_summary": "Custom events: $1.00 per million events published. AWS service events: free on default event bus. Schema Registry: free discovery, $0.10 per million events ingested. Archive: $0.10/GB stored. Scheduler: free for most use cases.",
+    "common_misconceptions": [
+      "EventBridge IS CloudWatch Events (renamed and expanded). Existing CloudWatch Events rules continue to work on the default EventBridge bus.",
+      "EventBridge is NOT a message queue. It is an event router. Events are delivered to targets and not stored for consumers to poll (unlike SQS).",
+      "EventBridge rules can match on ANY field in the event JSON, not just event source and detail-type. Content-based filtering is very powerful.",
+      "AWS service events (EC2 state changes, etc.) are delivered to the default bus for FREE. You only pay for custom events you publish."
+    ],
+    "related_services": ["Lambda", "SQS", "SNS", "Step Functions", "CloudWatch Events", "CloudTrail", "API Gateway"]
+  }
+]

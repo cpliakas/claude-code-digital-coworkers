@@ -1,0 +1,41 @@
+[
+  {
+    "service": "AWS Systems Manager",
+    "category": "management",
+    "one_liner": "Unified management service for EC2 and on-premises instances with Session Manager (secure shell access), Run Command (remote execution), Patch Manager, and Parameter Store.",
+    "when_to_use": [
+      "Secure remote access to EC2 instances without opening SSH/RDP ports or managing bastion hosts (Session Manager)",
+      "Run commands or scripts across hundreds of instances simultaneously (Run Command)",
+      "Automated OS and application patching with compliance reporting (Patch Manager)",
+      "Store configuration values and secrets (Parameter Store, free tier available)",
+      "Inventory collection, software installation, and maintenance windows for fleet management"
+    ],
+    "when_not_to_use": [
+      "Container orchestration (use ECS or EKS)",
+      "Application deployment and CI/CD (use CodeDeploy, CodePipeline)",
+      "Database credential rotation with native database integration (use Secrets Manager)"
+    ],
+    "key_facts": [
+      "Session Manager: browser-based or CLI shell access to EC2 instances. No inbound ports needed (uses SSM Agent outbound connection). Full audit logging to S3 and CloudWatch Logs. No SSH keys to manage.",
+      "Run Command: execute commands or scripts on multiple instances without SSH. Supports rate control (concurrency and error thresholds) for safe rolling execution.",
+      "Patch Manager: automate OS patching with patch baselines (define which patches to approve). Supports Linux and Windows. Reports compliance status.",
+      "Parameter Store: hierarchical key-value store for configuration data. Standard tier is free (up to 10,000 parameters). SecureString parameters encrypted with KMS.",
+      "Parameter Store vs. Secrets Manager: Parameter Store is free for standard tier and simpler. Secrets Manager costs $0.40/secret/month but provides native rotation and cross-account sharing.",
+      "Maintenance Windows: schedule automation tasks (patching, Run Command, Lambda) during defined time windows.",
+      "State Manager: define and enforce desired state configuration across instances (e.g., ensure antivirus is running, ensure specific packages are installed).",
+      "SSM Agent: pre-installed on Amazon Linux 2, Windows AMIs, and many marketplace AMIs. Required for all Systems Manager features.",
+      "Automation: orchestrate multi-step operational workflows (runbooks) for common tasks like AMI creation, snapshot management, and remediation.",
+      "OpsCenter: centralized location to view, investigate, and resolve operational issues across AWS resources.",
+      "Requires IAM instance profile with AmazonSSMManagedInstanceCore policy for EC2 instances."
+    ],
+    "pricing_summary": "Session Manager, Run Command, Patch Manager, State Manager: free. Parameter Store Standard: free (up to 10K params). Parameter Store Advanced: $0.05/parameter/month. Automation: free for most actions. OpsCenter: free for OpsItems.",
+    "common_misconceptions": [
+      "Session Manager does NOT require SSH ports to be open. It uses the SSM Agent's outbound HTTPS connection. This is the recommended approach over bastion hosts.",
+      "Run Command is NOT the same as Patch Manager. Run Command executes any command or script. Patch Manager specifically manages OS patching with baselines and compliance.",
+      "Parameter Store is NOT just for secrets. It stores any configuration data (feature flags, DB connection strings, license keys). SecureString is for sensitive values.",
+      "Patch Manager can patch THIRD-PARTY software, not just OS patches. Custom patch baselines support third-party repositories.",
+      "SSM Agent must be running AND have internet/VPC endpoint access to Systems Manager. Instances without SSM Agent or connectivity will not appear in Systems Manager."
+    ],
+    "related_services": ["EC2", "IAM", "CloudWatch", "CloudTrail", "Secrets Manager", "Lambda", "Config"]
+  }
+]
