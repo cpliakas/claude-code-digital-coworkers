@@ -1,0 +1,35 @@
+[
+  {
+    "service": "Amazon SNS FIFO Topics",
+    "category": "messaging-integration",
+    "one_liner": "Ordered, deduplicated pub/sub messaging that fans out to multiple SQS FIFO queues or other subscribers with strict message ordering.",
+    "when_to_use": [
+      "Need ordered, exactly-once message fanout to multiple consumers",
+      "Event-driven architectures requiring strict ordering guarantees across multiple subscribers",
+      "Financial transactions, inventory updates, or other workflows where message order matters",
+      "Replacing point-to-point ordered queues with ordered pub/sub patterns"
+    ],
+    "when_not_to_use": [
+      "High-throughput scenarios exceeding 300 messages/second per message group (use standard SNS + application-level ordering)",
+      "Subscribers that do not need ordering guarantees (use standard SNS topics for higher throughput)",
+      "Streaming data ingestion (use Kinesis Data Streams)"
+    ],
+    "key_facts": [
+      "SNS FIFO topics deliver messages in strict order within a message group, with exactly-once processing via deduplication.",
+      "Can fan out directly to multiple SQS FIFO queue subscriptions. You do NOT need a single SQS queue to receive and re-distribute.",
+      "Supports up to 300 messages/second (or 10 MB/second) per FIFO topic, with up to 3,000 messages/second with batching.",
+      "Message groups allow parallel processing of independent message streams while maintaining order within each group.",
+      "Content-based deduplication or explicit deduplication IDs prevent duplicate delivery.",
+      "Currently supports SQS FIFO queues as subscribers. Does not support Lambda, HTTP, or email subscriptions directly (route through SQS FIFO to Lambda).",
+      "Topic name must end with .fifo suffix."
+    ],
+    "pricing_summary": "SNS FIFO: $0.50 per million published messages + $0.06 per million subscription deliveries. SQS FIFO subscribers: standard SQS FIFO pricing applies.",
+    "common_misconceptions": [
+      "SNS FIFO CAN fan out to multiple subscribers directly. You do NOT need a single SQS FIFO queue with Lambda to re-distribute messages to other queues.",
+      "SNS FIFO ordering is per message group, NOT per topic. Different message groups can be processed in parallel.",
+      "SNS FIFO does NOT support all subscription protocols. Currently limited to SQS FIFO queues as subscribers.",
+      "FIFO topics and Standard topics are different resources. You cannot convert between them after creation."
+    ],
+    "related_services": ["SQS FIFO", "SNS Standard", "EventBridge", "Kinesis Data Streams"]
+  }
+]

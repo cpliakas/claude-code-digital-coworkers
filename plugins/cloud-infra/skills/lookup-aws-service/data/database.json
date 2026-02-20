@@ -1,0 +1,70 @@
+[
+  {
+    "service": "Amazon RDS Storage and SQL Server",
+    "category": "database",
+    "one_liner": "Managed relational database service with gp2/gp3 storage tiers and full SQL Server engine support including read replicas.",
+    "when_to_use": [
+      "Need a managed relational database with standard SQL engines (MySQL, PostgreSQL, MariaDB, Oracle, SQL Server)",
+      "SQL Server workloads that need read replicas for read scaling",
+      "Workloads needing predictable IOPS with gp3 or burstable IOPS with gp2",
+      "Applications that need automated backups, patching, and Multi-AZ failover"
+    ],
+    "when_not_to_use": [
+      "Need global cross-region replication with sub-second RPO (use Aurora Global Database)",
+      "Need serverless auto-scaling database (use Aurora Serverless v2)",
+      "Key-value or document access patterns at massive scale (use DynamoDB)",
+      "Need full OS-level control over the database server (use EC2 self-managed)"
+    ],
+    "key_facts": [
+      "gp2 storage: baseline of 3 IOPS per GB, minimum 100 IOPS, burst up to 3,000 IOPS for volumes under 1TB. Volumes of 1TB+ get 3,000+ baseline IOPS (no burst needed).",
+      "gp3 storage: baseline 3,000 IOPS and 125 MiB/s throughput regardless of volume size. Can provision up to 16,000 IOPS and 1,000 MiB/s independently.",
+      "RDS for SQL Server DOES support read replicas (added 2022). Supported for SQL Server 2016 SP2 CU8+ and later, Enterprise Edition.",
+      "SQL Server read replicas use native SQL Server Always On technology under the hood.",
+      "Multi-AZ for SQL Server uses Always On Availability Groups (SQL Server 2017+) or Database Mirroring (older versions).",
+      "RDS supports storage auto-scaling: automatically increases storage when usage exceeds threshold.",
+      "Maximum storage: 64 TiB for most engines, 16 TiB for SQL Server."
+    ],
+    "pricing_summary": "Instance hours (varies by instance class and engine) + storage (gp2: $0.115/GB/month, gp3: $0.08/GB/month + provisioned IOPS/throughput). SQL Server has license costs included in instance pricing. Multi-AZ doubles instance and storage costs.",
+    "common_misconceptions": [
+      "RDS SQL Server DOES have managed read replicas. This was added in 2022 and is commonly overlooked.",
+      "gp2 is NOT always slower than gp3. For volumes under 1TB, gp2 can burst to 3,000 IOPS. For steady-state workloads, gp3 provides 3,000 baseline IOPS at lower cost.",
+      "You do NOT need Provisioned IOPS (io1/io2) for 3,000 IOPS. Both gp2 (via burst) and gp3 (baseline) provide this.",
+      "RDS storage auto-scaling does NOT require manual intervention. It automatically increases storage when free space drops below 10%."
+    ],
+    "related_services": ["Aurora", "Aurora Serverless v2", "RDS Proxy", "DynamoDB", "ElastiCache"]
+  },
+  {
+    "service": "Amazon DynamoDB Native Features",
+    "category": "database",
+    "one_liner": "DynamoDB includes built-in export-to-S3, point-in-time recovery, Streams, and global tables with no custom code required.",
+    "when_to_use": [
+      "Need to export DynamoDB table data to S3 for analytics (use native export, not custom Lambda pipeline)",
+      "Need continuous backups with point-in-time recovery (PITR) to any second in the last 35 days",
+      "Need change data capture for downstream processing (DynamoDB Streams)",
+      "Need multi-region active-active database (Global Tables)",
+      "Need TTL-based automatic data expiration"
+    ],
+    "when_not_to_use": [
+      "Need real-time streaming to non-AWS destinations (consider Kinesis Data Streams with DynamoDB integration)",
+      "Need complex SQL joins across tables (use a relational database)",
+      "Export needs to be real-time continuous (Streams + Lambda for near-real-time; native export is a point-in-time batch)"
+    ],
+    "key_facts": [
+      "Native Export to S3: zero-code, zero-capacity export of full table data to S3 in DynamoDB JSON or Amazon Ion format. Does NOT consume read capacity. Uses PITR backup as source.",
+      "Point-in-Time Recovery (PITR): continuous backups with restore to any second in the last 35 days. Restores to a new table.",
+      "DynamoDB Streams: ordered, time-series log of every item-level change (insert, update, delete). Integrates with Lambda, Kinesis Data Streams, and Kinesis Client Library.",
+      "Global Tables: multi-region, multi-active replication with sub-second replication latency. All regions accept writes.",
+      "TTL: automatically deletes expired items at no cost. Deletion is eventually consistent (items may persist up to 48 hours past TTL).",
+      "On-demand backup: full table backup that can be retained indefinitely. Restores to a new table.",
+      "Import from S3: load data from S3 into a new DynamoDB table without writing custom code."
+    ],
+    "pricing_summary": "Export to S3: $0.11 per GB exported. PITR: $0.20 per GB per month. Streams: no additional charge for DynamoDB Streams reads; Lambda triggers have standard Lambda pricing. Global Tables: replicated write capacity is charged in each replicated region.",
+    "common_misconceptions": [
+      "DynamoDB HAS native export to S3. You do NOT need to build a Lambda scan-and-write pipeline. The native export uses PITR and does not consume table read capacity.",
+      "PITR restores to a NEW table, not in-place. Plan for table rename or application pointer update after restore.",
+      "DynamoDB Streams is NOT the same as Kinesis Data Streams. Streams is built into DynamoDB with 24-hour retention. Kinesis integration is an alternative with longer retention and broader consumer support.",
+      "Global Tables replication is NOT instant. Sub-second typical, but conflict resolution is last-writer-wins."
+    ],
+    "related_services": ["S3", "Lambda", "Kinesis Data Streams", "AWS Backup", "Athena", "Glue"]
+  }
+]

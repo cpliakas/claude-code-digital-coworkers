@@ -15,8 +15,9 @@ class TestCallAgent:
         client.messages.create.return_value = make_mock_response(
             "Use S3 Transfer Acceleration."
         )
-        result = call_agent(client, "system prompt", "user prompt", "model-id")
-        assert result == "Use S3 Transfer Acceleration."
+        text, tool_calls = call_agent(client, "system prompt", "user prompt", "model-id")
+        assert text == "Use S3 Transfer Acceleration."
+        assert tool_calls == []
 
     def test_passes_params(self):
         client = Mock()

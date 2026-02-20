@@ -11,6 +11,7 @@ Usage:
   python3 benchmark.py <suite-path> --mode direct       # Single mode
   python3 benchmark.py <suite-path> --sample 20         # Random sample
   python3 benchmark.py <suite-path> --ids 1,2,5,10      # Specific IDs
+  python3 benchmark.py <suite-path> --tools              # Enable tool use
   python3 benchmark.py <suite-path> --dry-run            # Show prompts only
 
 Requires: ANTHROPIC_API_KEY environment variable
@@ -40,6 +41,129 @@ except ImportError:
 
 
 REPO_ROOT = Path(__file__).parent.parent
+
+
+# ---------------------------------------------------------------------------
+# Tool support for knowledge-base lookups
+# ---------------------------------------------------------------------------
+
+TOOL_DEFINITIONS = [
+    {
+        "name": "lookup_aws_service",
+        "description": (
+            "Look up detailed capability card for an AWS service. Returns the "
+            "full card including when to use, when not to use, key facts, "
+            "pricing, and common misconceptions. Supports fuzzy matching on "
+            "service name."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "service": {
+                    "type": "string",
+                    "description": (
+                        "AWS service name to look up (e.g. 'S3 Object Lambda',"
+                        " 'DynamoDB', 'Storage Gateway')"
+                    ),
+                }
+            },
+            "required": ["service"],
+        },
+    },
+    {
+        "name": "list_services_for_category",
+        "description": (
+            "List available AWS services in a category, or search across all "
+            "categories by use case. Returns service names and one-line "
+            "descriptions to help identify relevant options you might not have "
+            "considered."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "description": (
+                        "Service category: compute, database, storage, "
+                        "networking, security-identity, messaging-integration,"
+                        " analytics, management, migration, ml"
+                    ),
+                },
+                "use_case": {
+                    "type": "string",
+                    "description": (
+                        "Describe a use case to search across all categories "
+                        "(e.g. 'shared file system with AD integration')"
+                    ),
+                },
+            },
+        },
+    },
+]
+
+
+def load_tool_knowledge_base(data_dir: Path) -> tuple[dict, list]:
+    """Load capability cards from JSON files in the data directory."""
+    by_category: dict[str, list] = {}
+    all_services: list[dict] = []
+    for path in sorted(data_dir.glob("*.json")):
+        category = path.stem
+        cards = json.loads(path.read_text())
+        by_category[category] = cards
+        all_services.extend(cards)
+    return by_category, all_services
+
+
+def execute_tool(name: str, input_data: dict, by_category: dict,
+                 all_services: list) -> str:
+    """Execute a tool call against the in-process knowledge base."""
+    if name == "lookup_aws_service":
+        query = input_data.get("service", "").lower()
+        # Exact match
+        matches = [s for s in all_services
+                   if s["service"].lower() == query]
+        # Substring match
+        if not matches:
+            matches = [s for s in all_services
+                       if query in s["service"].lower()]
+        # One-liner match
+        if not matches:
+            matches = [s for s in all_services
+                       if query in s["one_liner"].lower()]
+        if not matches:
+            names = ", ".join(s["service"] for s in all_services)
+            return (f'No capability card found for "{input_data.get("service")}'
+                    f'". Available services: {names}')
+        return json.dumps(matches[0] if len(matches) == 1 else matches,
+                          indent=2)
+
+    if name == "list_services_for_category":
+        category = input_data.get("category")
+        use_case = input_data.get("use_case")
+        if not category and not use_case:
+            cats = [k for k, v in by_category.items() if v]
+            return (f"Provide either 'category' or 'use_case'. "
+                    f"Available categories: {', '.join(cats)}")
+        if use_case:
+            q = use_case.lower()
+            results = [
+                s for s in all_services
+                if any(q in u.lower() for u in s["when_to_use"])
+                or q in s["one_liner"].lower()
+                or any(q in f.lower() for f in s["key_facts"])
+            ]
+        else:
+            results = by_category.get(category, [])
+        if not results:
+            msg = (f'No services found in category "{category}".'
+                   if category
+                   else f'No services matched use case "{use_case}".')
+            return msg
+        summary = [{"service": s["service"], "category": s["category"],
+                     "one_liner": s["one_liner"]} for s in results]
+        return json.dumps(summary, indent=2)
+
+    return f"Unknown tool: {name}"
 
 
 # ---------------------------------------------------------------------------
@@ -120,15 +244,64 @@ def render_prompt(template: str, question: dict, field_map: dict,
 # ---------------------------------------------------------------------------
 
 def call_agent(client: anthropic.Anthropic, system_prompt: str,
-               user_prompt: str, model: str, max_tokens: int = 2048) -> str:
-    """Send a prompt to the agent and return the response."""
-    response = client.messages.create(
+               user_prompt: str, model: str, max_tokens: int = 2048,
+               tools: list = None, tool_context: tuple = None) -> tuple[str, list]:
+    """Send a prompt to the agent and return (response_text, tool_calls_log).
+
+    When tools is provided, handles the tool-use conversation loop:
+    agent requests tool -> execute tool -> return result -> agent continues.
+    """
+    tool_calls_log = []
+    kwargs = dict(
         model=model,
         max_tokens=max_tokens,
         system=system_prompt,
         messages=[{"role": "user", "content": user_prompt}],
     )
-    return response.content[0].text
+    if tools:
+        kwargs["tools"] = tools
+
+    response = client.messages.create(**kwargs)
+
+    # Handle tool-use conversation loop (max 5 rounds to prevent runaway)
+    messages = kwargs["messages"][:]
+    for _ in range(5):
+        if response.stop_reason != "tool_use":
+            break
+
+        # Collect all tool-use blocks and build results
+        assistant_content = response.content
+        messages.append({"role": "assistant", "content": assistant_content})
+
+        tool_results = []
+        for block in assistant_content:
+            if block.type == "tool_use":
+                by_category, all_services = tool_context
+                result_text = execute_tool(
+                    block.name, block.input, by_category, all_services
+                )
+                tool_calls_log.append({
+                    "tool": block.name,
+                    "input": block.input,
+                })
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": result_text,
+                })
+
+        messages.append({"role": "user", "content": tool_results})
+        response = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            system=system_prompt,
+            messages=messages,
+            tools=tools,
+        )
+
+    # Extract final text response
+    text_parts = [b.text for b in response.content if hasattr(b, "text")]
+    return "\n".join(text_parts), tool_calls_log
 
 
 def call_judge(client: anthropic.Anthropic, judge_prompt: str,
@@ -155,7 +328,8 @@ def call_judge(client: anthropic.Anthropic, judge_prompt: str,
 
 def run_mode(client: anthropic.Anthropic, question: dict, system_prompt: str,
              mode_name: str, mode_config: dict, field_map: dict,
-             agent_model: str, judge_model: str, dry_run: bool) -> dict:
+             agent_model: str, judge_model: str, dry_run: bool,
+             tools: list = None, tool_context: tuple = None) -> dict:
     """Run a single question through one mode."""
     id_field = field_map["id"]
     user_prompt = render_prompt(mode_config["agent_prompt"], question, field_map)
@@ -169,8 +343,10 @@ def run_mode(client: anthropic.Anthropic, question: dict, system_prompt: str,
         }
 
     max_tokens = mode_config.get("agent_max_tokens", 2048)
-    response = call_agent(client, system_prompt, user_prompt, agent_model,
-                          max_tokens)
+    response, tool_calls_log = call_agent(
+        client, system_prompt, user_prompt, agent_model, max_tokens,
+        tools=tools, tool_context=tool_context,
+    )
 
     judge_prompt = render_prompt(mode_config["judge_prompt"], question,
                                 field_map, response=response)
@@ -181,6 +357,10 @@ def run_mode(client: anthropic.Anthropic, question: dict, system_prompt: str,
         "id": question[id_field],
         "agent_response": response,
     }
+
+    if tools:
+        result["tool_call_count"] = len(tool_calls_log)
+        result["tool_calls"] = tool_calls_log
 
     scoring = mode_config["scoring"]
 
@@ -316,6 +496,25 @@ def print_summary(results: list[dict], mode_name: str, mode_config: dict):
                     print(f"    '{word}' mentioned in {count}/{len(results)} "
                           f"weakness notes")
 
+    # Tool usage statistics
+    if any("tool_call_count" in r for r in results):
+        tool_counts = [r.get("tool_call_count", 0) for r in results]
+        used = sum(1 for c in tool_counts if c > 0)
+        total_calls = sum(tool_counts)
+        print(f"\n  Tool usage:")
+        print(f"    Questions using tools: {used}/{len(results)} "
+              f"({used / len(results) * 100:.0f}%)")
+        print(f"    Total tool calls: {total_calls}")
+        if total_calls > 0:
+            tool_names: dict[str, int] = {}
+            for r in results:
+                for tc in r.get("tool_calls", []):
+                    name = tc["tool"]
+                    tool_names[name] = tool_names.get(name, 0) + 1
+            for name, count in sorted(tool_names.items(),
+                                      key=lambda x: -x[1]):
+                print(f"      {name}: {count}")
+
     print()
 
 
@@ -358,6 +557,14 @@ def main():
     parser.add_argument(
         "--output-dir", type=str, default=None,
         help="Output directory (default: <suite>/results)"
+    )
+    parser.add_argument(
+        "--tools", action="store_true",
+        help="Enable tool use (agent can call knowledge-base lookup tools)"
+    )
+    parser.add_argument(
+        "--tools-data", type=str, default=None,
+        help="Path to tool knowledge-base data directory (default: auto-detect)"
     )
     args = parser.parse_args()
 
@@ -426,6 +633,23 @@ def main():
             sys.exit(1)
         client = anthropic.Anthropic(api_key=api_key)
 
+    # Load tool knowledge base if --tools is enabled
+    tools = None
+    tool_context = None
+    if args.tools:
+        if args.tools_data:
+            data_dir = Path(args.tools_data)
+        else:
+            data_dir = (REPO_ROOT / "plugins" / "cloud-infra" /
+                        "skills" / "lookup-aws-service" / "data")
+        if not data_dir.exists():
+            print(f"Error: tool data directory not found: {data_dir}")
+            sys.exit(1)
+        by_category, all_services = load_tool_knowledge_base(data_dir)
+        tool_context = (by_category, all_services)
+        tools = TOOL_DEFINITIONS
+        print(f"Tools: enabled ({len(all_services)} service cards loaded)")
+
     # Run benchmarks
     for mode_name in mode_names:
         mode_config = available_modes[mode_name]
@@ -439,6 +663,7 @@ def main():
                 result = run_mode(
                     client, question, system_prompt, mode_name, mode_config,
                     field_map, agent_model, judge_model, args.dry_run,
+                    tools=tools, tool_context=tool_context,
                 )
                 results.append(result)
                 if not args.dry_run:

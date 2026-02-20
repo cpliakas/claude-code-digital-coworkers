@@ -214,8 +214,10 @@ def make_mock_response(text: str) -> Mock:
     """Create a mock Anthropic API response with the given text."""
     content_block = Mock()
     content_block.text = text
+    content_block.type = "text"
     response = Mock()
     response.content = [content_block]
+    response.stop_reason = "end_turn"
     return response
 
 

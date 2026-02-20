@@ -1,0 +1,131 @@
+[
+  {
+    "service": "AWS Storage Gateway",
+    "category": "storage",
+    "one_liner": "Hybrid cloud storage that connects on-premises environments to AWS cloud storage via File, Volume, or Tape gateway modes.",
+    "when_to_use": [
+      "On-premises applications need access to cloud-backed storage (NFS/SMB file shares, iSCSI block volumes, or virtual tape)",
+      "Migrate tape backups to S3/Glacier without changing existing backup workflows",
+      "Extend on-premises storage capacity with cloud-backed volumes",
+      "Provide low-latency local cache for frequently accessed cloud data"
+    ],
+    "when_not_to_use": [
+      "Pure cloud workloads with no on-premises component (use S3 or EBS directly)",
+      "High-throughput HPC file systems (use FSx for Lustre)",
+      "Bulk one-time data migration (use Snow family or DataSync)"
+    ],
+    "key_facts": [
+      "File Gateway: NFS/SMB interface backed by S3. Each file stored as an S3 object. Supports AD authentication for SMB.",
+      "Volume Gateway - Stored: Full dataset on-premises with async snapshots to S3 as EBS snapshots. Best when you need low-latency access to the entire dataset locally.",
+      "Volume Gateway - Cached: Primary data in S3, frequently accessed data cached locally. Best when dataset is too large for on-premises but you need low-latency access to working set.",
+      "Tape Gateway: Virtual tape library (VTL) backed by S3 and S3 Glacier. Compatible with existing backup software (Veeam, NetBackup, etc).",
+      "All modes deploy as a VM appliance on-premises (VMware, Hyper-V, or hardware appliance).",
+      "Volume Gateway snapshots are stored as EBS snapshots and can be used to create EBS volumes for EC2."
+    ],
+    "pricing_summary": "Per-gateway fee (~$125/month) plus S3/EBS storage costs. Data written through gateway to S3 incurs standard S3 pricing. No charge for data read from local cache.",
+    "common_misconceptions": [
+      "Stored Volume is NOT the same as Cached Volume. Stored keeps the full dataset on-premises; Cached keeps only the hot data locally.",
+      "File Gateway does NOT replace EFS. File Gateway is for hybrid on-prem-to-cloud access; EFS is for cloud-native shared file systems.",
+      "Tape Gateway does NOT require physical tapes. It emulates a tape library for backup software."
+    ],
+    "related_services": ["S3", "S3 Glacier", "EBS", "DataSync", "Snow Family"]
+  },
+  {
+    "service": "S3 Object Lambda",
+    "category": "storage",
+    "one_liner": "Transform S3 objects dynamically at retrieval time using Lambda functions with no storage duplication needed.",
+    "when_to_use": [
+      "Dynamic data masking or redaction per caller identity",
+      "Format conversion at read time (XML to JSON, image resizing)",
+      "Enriching data with external sources on retrieval",
+      "Filtering or subsetting data based on requester context"
+    ],
+    "when_not_to_use": [
+      "Static transformations that should be done once (use S3 Batch Operations or lifecycle rules)",
+      "High-throughput streaming with strict latency requirements (Lambda adds per-request latency)",
+      "Transformations that produce large output objects repeatedly (consider pre-transforming and storing)"
+    ],
+    "key_facts": [
+      "No storage duplication: transforms happen at GET time via a Lambda function",
+      "Works with existing S3 GET operations through an Object Lambda Access Point",
+      "Lambda function receives the original object and returns the transformed version",
+      "Supports objects up to 60GB",
+      "Can return different results for different callers using the same S3 object",
+      "Configured by creating an Object Lambda Access Point that references a supporting S3 Access Point and a Lambda function"
+    ],
+    "pricing_summary": "S3 GET cost + Lambda invocation ($0.20/1M) + Lambda duration. No additional storage cost since objects are not duplicated.",
+    "common_misconceptions": [
+      "NOT a batch processing service: it runs per-request at retrieval time",
+      "Does NOT modify the stored object: the original remains unchanged in S3",
+      "Does NOT require changes to existing S3 PUT workflows: only GET is intercepted"
+    ],
+    "related_services": ["S3", "Lambda", "S3 Batch Operations", "S3 Access Points"]
+  },
+  {
+    "service": "S3 Object Lock",
+    "category": "storage",
+    "one_liner": "Write-once-read-many (WORM) protection for S3 objects with Governance and Compliance retention modes.",
+    "when_to_use": [
+      "Regulatory requirements mandate immutable records (SEC 17a-4, FINRA, HIPAA)",
+      "Protect against accidental or malicious deletion of critical data",
+      "Legal hold requirements for litigation or compliance",
+      "Ransomware protection for backup data"
+    ],
+    "when_not_to_use": [
+      "General-purpose versioning without immutability requirements (use S3 Versioning alone)",
+      "Data that needs frequent updates or overwrites",
+      "Short-lived temporary data"
+    ],
+    "key_facts": [
+      "Two retention modes: Governance and Compliance",
+      "Governance mode: most users cannot overwrite or delete, but users with s3:BypassGovernanceRetention permission CAN override. Good for testing or soft protection.",
+      "Compliance mode: NO ONE can delete or overwrite the object, not even the root account, until the retention period expires. This is true WORM.",
+      "Legal Hold: independent of retention period. Can be applied/removed by users with s3:PutObjectLegalHold. Object cannot be deleted while legal hold is active.",
+      "Requires S3 Versioning to be enabled on the bucket",
+      "Object Lock must be enabled at bucket creation time (cannot be added to existing buckets without creating a new bucket)",
+      "Retention period is set per-object, not per-bucket (though default retention can be set at bucket level)"
+    ],
+    "pricing_summary": "No additional cost beyond standard S3 storage. Object Lock is a free feature of S3.",
+    "common_misconceptions": [
+      "Governance mode is NOT absolute immutability: privileged IAM users can override it. Only Compliance mode provides true WORM.",
+      "Object Lock does NOT prevent new versions from being uploaded. It prevents deletion or overwrite of specific object versions.",
+      "Legal Hold and Retention are independent: an object can have both, either, or neither."
+    ],
+    "related_services": ["S3", "S3 Versioning", "S3 Glacier Vault Lock", "AWS Backup"]
+  },
+  {
+    "service": "Amazon FSx for Windows File Server",
+    "category": "storage",
+    "one_liner": "Fully managed Windows-native shared file storage with SMB protocol, NTFS, and direct Active Directory integration.",
+    "when_to_use": [
+      "Windows workloads need shared file storage with SMB protocol",
+      "Applications require NTFS features (ACLs, shadow copies, user quotas)",
+      "Need to join a file system to an on-premises Active Directory domain",
+      "Home directories, department shares, or CMS content stores for Windows users",
+      "Lift-and-shift of Windows file servers to AWS"
+    ],
+    "when_not_to_use": [
+      "Linux-only workloads needing NFS (use EFS)",
+      "HPC parallel file systems (use FSx for Lustre)",
+      "Object storage patterns (use S3)",
+      "Single-instance block storage (use EBS)"
+    ],
+    "key_facts": [
+      "Supports SMB 2.0/3.0 protocol natively with full NTFS compatibility",
+      "Can join directly to on-premises Active Directory over VPN or Direct Connect. Does NOT require AWS Managed Microsoft AD.",
+      "Also supports AWS Managed Microsoft AD and AD Connector for AD integration",
+      "Supports DFS Namespaces for grouping multiple file shares",
+      "Multi-AZ deployment option for high availability (automatic failover)",
+      "Supports Windows shadow copies (VSS) for user-driven file restores",
+      "Data deduplication reduces storage costs by 50-80% for typical file shares",
+      "Accessible from on-premises via VPN or Direct Connect"
+    ],
+    "pricing_summary": "Storage: ~$0.013/GB/month (SSD) or ~$0.013/GB/month (HDD). Throughput: included base throughput with option to provision more. Multi-AZ doubles the storage cost.",
+    "common_misconceptions": [
+      "Does NOT require AWS Managed Microsoft AD ($1,100+/month). FSx can join on-premises AD directly over VPN/Direct Connect.",
+      "NOT just for EC2 Windows instances. Can be accessed from on-premises servers, Amazon WorkSpaces, and AppStream.",
+      "NOT the same as EFS. FSx is Windows/SMB-native; EFS is Linux/NFS-native. They serve different ecosystems."
+    ],
+    "related_services": ["FSx for Lustre", "EFS", "AWS Managed Microsoft AD", "AD Connector", "AWS Directory Service"]
+  }
+]
