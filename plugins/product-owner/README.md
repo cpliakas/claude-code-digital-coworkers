@@ -1,16 +1,18 @@
 # product-owner
 
-A Claude Code plugin that brings product ownership discipline to AI-assisted development — roadmap awareness, requirement quality, and structured output designed to flow into GitHub Issues and Jira.
+A Claude Code plugin that brings product ownership discipline to AI-assisted development: roadmap awareness, requirement quality, and structured output designed to flow into GitHub Issues and Jira.
 
 ## What this plugin does
 
-Most AI coding tools jump straight to implementation. This plugin inserts the product ownership layer that should come first: *Is this the right thing to build? Is it scoped correctly? Is it broken down into work that can actually ship?*
+**This is a product owner, not a product manager.** The decisions about what to build and why are yours: product vision, market positioning, strategic feature bets. Once direction is set, the product owner takes over, sequencing the backlog, scoping requirements precisely, and ensuring work is broken down into increments the team can actually ship.
+
+Most AI coding tools jump straight to implementation. This plugin inserts the product ownership layer that should come first: Is this scoped correctly? Is it sequenced properly? Is it broken down into work that can actually ship?
 
 The plugin has two modes:
 
-**Strategic consulting** — The `product-owner` agent reads your roadmap and advises on sequencing, priorities, and phase transitions. It pushes back when proposed work conflicts with future plans or skips prerequisites. It doesn't implement anything; it tells you what to build and in what order.
+**Work sequencing:** The `product-owner` agent reads your roadmap and advises on ordering, prerequisites, and phase transitions. It pushes back when proposed work skips a dependency or conflicts with what's planned next. It doesn't decide what to build or why; it organizes and sequences the work within the direction you've already set.
 
-**Requirement authoring** — Three skills (`/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements into structured specifications. Output is designed to be filed directly in issue tracking systems without manual reformatting.
+**Requirement authoring:** Three skills (`/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements into structured specifications. Output is designed to be filed directly in issue tracking systems without manual reformatting.
 
 ## Architecture
 
@@ -29,11 +31,11 @@ This plugin sits at the top of a three-layer stack:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-This plugin owns Layer 3 only. It produces high-quality requirement artifacts; it never calls an API or creates an issue itself. That separation keeps this plugin platform-agnostic and lets the official GitHub and Atlassian Claude Code plugins handle filing without duplication.
+This plugin owns Layer 3 only. It produces high-quality requirement artifacts and never calls an API or creates an issue itself. That separation keeps this plugin platform-agnostic and lets the official GitHub and Atlassian Claude Code plugins handle filing without duplication.
 
 ## How the pieces fit together
 
-### The agent: strategic layer
+### The agent: sequencing layer
 
 The `product-owner` agent is a consultative peer, not an implementer. It maintains a roadmap in project memory and uses it to evaluate every significant work request before coding begins.
 
@@ -90,7 +92,7 @@ RIF output is structured so that official platform plugins can consume it withou
 
 ## A typical workflow
 
-1. **Consult the agent** before starting a new feature area. It checks the roadmap, flags sequencing issues, and confirms this is the right next thing.
+1. **Consult the agent** before starting a new feature area. It checks the roadmap, flags sequencing issues, and confirms this is the right next thing to work on.
 
 2. **Run `/write-epic`** to scope the initiative. You get a structured spec with YAML metadata and a markdown body covering problem statement, success metrics, scope boundaries, and dependencies.
 
@@ -98,7 +100,7 @@ RIF output is structured so that official platform plugins can consume it withou
 
 4. **Run `/write-story`** on individual stories that need full specification. The skill runs INVEST validation and produces a complete story with Given/When/Then acceptance criteria duplicated in both the YAML metadata and the markdown body.
 
-5. **File with your platform plugin.** Pass the RIF output to the official GitHub or Atlassian Claude Code plugin to create issues, link them, and populate fields — no copy-pasting or reformatting.
+5. **File with your platform plugin.** Pass the RIF output to the official GitHub or Atlassian Claude Code plugin to create issues, link them, and populate fields without copy-pasting or reformatting.
 
 ## When to use what
 
@@ -106,7 +108,7 @@ RIF output is structured so that official platform plugins can consume it withou
 |-----------|-----|
 | "Should we build X now or later?" | `product-owner` agent |
 | "What's left in this phase?" | `product-owner` agent |
-| "We finished Y — what's next?" | `product-owner` agent |
+| "We finished Y. What's next?" | `product-owner` agent |
 | "Scope out a new feature area" | `/write-epic` |
 | "Break this epic into stories" | `/decompose-requirement` |
 | "Break this story into subtasks" | `/decompose-requirement` |
@@ -114,7 +116,9 @@ RIF output is structured so that official platform plugins can consume it withou
 
 ## What this plugin does not do
 
+- Set product vision or decide what features to build
+- Make market-level trade-offs; those decisions belong to you
 - Call GitHub, Jira, or any external API
 - Create, update, or close issues
 - Manage sprint assignments or board state
-- Replace the official GitHub or Atlassian Claude Code plugins — it feeds them
+- Serve as a replacement for the official GitHub or Atlassian Claude Code plugins; this plugin feeds them
