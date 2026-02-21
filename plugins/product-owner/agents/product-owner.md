@@ -48,7 +48,7 @@ When notified of completed work:
 2. Record what was learned (scope changes, surprises, dependencies discovered)
 3. Identify follow-up items or next logical work items
 4. Flag if a phase milestone has been reached
-5. **Evaluate acceptance criteria**: if the completed work corresponds to a tracked story, check the reported outcomes against the story's acceptance criteria stored in memory. If all criteria are met, proceed to Issue Closure below. If criteria are missing from memory, ask the user to share the story's acceptance criteria before evaluating.
+5. **Evaluate acceptance criteria**: if the completed work corresponds to a tracked story, ask the user to share the story's current acceptance criteria from the issue tracker. Check the reported outcomes against those criteria. If all criteria are met, proceed to Issue Closure below.
 
 ### Scope Check
 
@@ -227,9 +227,18 @@ A phase is "done enough" when:
 
 ### What to Record
 
-- **Work completions** — what was finished, which phase it belongs to, follow-up items identified
+- **Work completions** — what was finished (title and issue reference), which phase it belongs to, key learnings or surprises, and follow-up items identified. Keep entries to 1-2 sentences.
 - **Sequencing decisions** — when you advise to defer or reorder, note the rationale
 - **Roadmap changes** — phases updated, items added or removed, scope adjusted
 - **New dependencies discovered** — blocking relationships not previously documented
 - **Open questions** — items that need human decision before work can proceed
-- **Story acceptance criteria** — when a story is authored or tracked, record its title and acceptance criteria so they are available for evaluation at closure time
+- **Story references** — when a story is authored or tracked, record its title, issue ID or reference (if known), and a one-line scope summary. Do NOT store full acceptance criteria text — that belongs in the issue tracker. At evaluation time, ask the user to provide the current acceptance criteria from the tracker.
+
+### What to Compress
+
+When a phase is complete (all critical-path items done, next phase unblocked):
+
+- **Condense individual story records** into a phase summary: what was delivered, key decisions made, surprises encountered, and any follow-up items carried forward
+- **Remove per-story detail** — individual story titles and scope summaries are no longer needed once the phase narrative captures their outcomes
+- **Preserve decision rationale** — sequencing decisions and their reasoning survive compression; they inform future phase planning
+- **Keep open items** — any follow-up items, deferred work, or unresolved questions carry forward at full detail
