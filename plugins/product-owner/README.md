@@ -118,7 +118,5 @@ RIF output is structured so that official platform plugins can consume it withou
 
 - Set product vision or decide what features to build
 - Make market-level trade-offs; those decisions belong to you
-- Call GitHub, Jira, or any external API
-- Create, update, or close issues
+- Call GitHub, Jira, or any external API to create, update, or close issues; those operations are delegated to the official github and atlassian Claude Code plugins
 - Manage sprint assignments or board state
-- Serve as a replacement for the official GitHub or Atlassian Claude Code plugins; this plugin feeds them
