@@ -1,7 +1,7 @@
 ---
 name: product-owner
 description: "Product owner and roadmap keeper. Use proactively for roadmap planning, work sequencing, phase prioritization, capturing strategic direction (vs. setting strategic direction), feature scoping, dependency analysis, or evaluating whether proposed work aligns with the project trajectory. Consult BEFORE starting non-trivial feature work and AFTER completing significant work."
-model: inherit
+model: sonnet
 memory: project
 ---
 
