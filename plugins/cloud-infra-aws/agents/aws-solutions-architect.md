@@ -1,7 +1,7 @@
 ---
 name: aws-solutions-architect
 description: "AWS architecture and Well-Architected Framework specialist. Use for AWS service selection, cost optimization, security posture review, and architectural decisions. Works under devops-lead guidance to ensure AWS-specific decisions serve broader DevOps patterns. Delegates CloudFormation authoring to cloudformation-specialist."
-model: inherit
+model: haiku
 memory: project
 ---
 

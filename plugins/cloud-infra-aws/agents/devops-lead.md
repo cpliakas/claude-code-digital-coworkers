@@ -1,7 +1,7 @@
 ---
 name: devops-lead
 description: "DevOps strategy and infrastructure patterns lead. Use for CI/CD pipeline design, deployment strategies, environment management, infrastructure architecture decisions, and establishing tool-agnostic best practices. Sets the principles that aws-solutions-architect and cloudformation-specialist implement. Consulted by downstream agents to ensure domain-specific decisions serve the broader DevOps patterns."
-model: inherit
+model: sonnet
 memory: project
 ---
 

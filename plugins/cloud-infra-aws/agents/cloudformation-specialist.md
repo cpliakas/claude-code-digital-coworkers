@@ -1,7 +1,7 @@
 ---
 name: cloudformation-specialist
 description: "CloudFormation template authoring and stack management specialist. Use for writing CF templates, debugging stack operations, drift detection, and nested stack design. Works under guidance of aws-solutions-architect for service selection and devops-lead for infrastructure standards. Implementation-focused — translates architectural decisions into templates."
-model: inherit
+model: haiku
 memory: project
 ---
 
