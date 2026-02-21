@@ -23,10 +23,10 @@
       "version": "0.3.0"
     },
     {
-      "name": "cloud-infra-aws",
-      "source": "./plugins/cloud-infra-aws",
+      "name": "cloud-engineering-aws",
+      "source": "./plugins/cloud-engineering-aws",
       "description": "AWS cloud infrastructure agents for DevOps strategy, solutions architecture, and CloudFormation",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }

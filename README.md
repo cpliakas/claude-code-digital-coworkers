@@ -20,7 +20,7 @@ If you're looking for well-maintained, general-purpose collections of Claude Cod
 
 Most agent collections are flat lists where each agent is independent and self-contained. Here, agents are organized as a team with explicit roles, hierarchy, and delegation chains defined in their markdown files.
 
-The `cloud-infra-aws` plugin illustrates this. `devops-lead` sets tool-agnostic principles (deployment strategies, observability requirements, IaC standards). `aws-solutions-architect` translates those principles into AWS-specific architecture decisions, consulting `devops-lead` to validate that its recommendations serve broader DevOps patterns. `cloudformation-specialist` implements what the architect specifies, consulting upstream when unsure whether a design choice (e.g., nested vs. separate stacks) is correct. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
+The `cloud-engineering-aws` plugin illustrates this. `devops-lead` sets tool-agnostic principles (deployment strategies, observability requirements, IaC standards). `aws-solutions-architect` translates those principles into AWS-specific architecture decisions, consulting `devops-lead` to validate that its recommendations serve broader DevOps patterns. `cloudformation-specialist` implements what the architect specifies, consulting upstream when unsure whether a design choice (e.g., nested vs. separate stacks) is correct. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
 
 Across plugins, the same pattern holds at different levels. `product-owner` advises on sequencing and priorities but never implements, acting as a consultative agent that checks proposed work against the roadmap. `qa-lead` owns the full test lifecycle and consults `security-engineer` for security-related tests. `security-engineer` doesn't delegate at all and exists as a leaf node consulted by others during review cycles.
 
@@ -43,7 +43,7 @@ Add the marketplace to your Claude Code project, then install the plugins you ne
 /plugin install security-engineer@digital-coworkers
 /plugin install qa-lead@digital-coworkers
 /plugin install product-owner@digital-coworkers
-/plugin install cloud-infra-aws@digital-coworkers
+/plugin install cloud-engineering-aws@digital-coworkers
 ```
 
 ## Plugins
@@ -76,7 +76,7 @@ Product owner for roadmap planning, requirement authoring, and structured output
 | Skill | `/write-story` | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
 | Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata |
 
-### cloud-infra-aws
+### cloud-engineering-aws
 
 AWS cloud infrastructure agents covering DevOps strategy, solutions architecture, and CloudFormation implementation.
 
@@ -175,7 +175,7 @@ claude-code-digital-coworkers/
     │       ├── write-epic/SKILL.md
     │       ├── write-story/SKILL.md
     │       └── decompose-requirement/SKILL.md
-    └── cloud-infra-aws/
+    └── cloud-engineering-aws/
         ├── .claude-plugin/plugin.json
         ├── agents/
         │   ├── devops-lead.md
