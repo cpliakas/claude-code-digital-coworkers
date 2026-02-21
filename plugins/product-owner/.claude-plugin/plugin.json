@@ -1,5 +1,5 @@
 {
   "name": "product-owner",
-  "description": "Product owner agent and skills for roadmap planning, user stories, and epic creation",
-  "version": "0.2.1"
+  "description": "Product owner agent and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
+  "version": "0.3.0"
 }

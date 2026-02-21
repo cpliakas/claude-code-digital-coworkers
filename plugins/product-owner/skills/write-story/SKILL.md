@@ -1,16 +1,17 @@
 ---
-name: write-user-story
-description: "Write a well-structured user story with acceptance criteria and INVEST validation. Use when formalizing requirements, breaking down epics, or drafting work items for any backlog tool."
+name: write-story
+description: "Write a well-structured user story with structured metadata, acceptance criteria, and INVEST validation. Output includes machine-parseable YAML frontmatter compatible with GitHub Issues and Jira."
 user-invokable: true
 allowed-tools: Read, Grep, Glob
 argument-hint: "[description of the feature or requirement]"
 ---
 
-# Write User Story
+# Write Story
 
-Write a complete, high-quality user story ready for any backlog tool.
+Write a complete, high-quality user story with structured metadata ready for GitHub Issues or Jira.
 
 ## Input
+
 `$ARGUMENTS` = description of the feature, requirement, or problem to solve.
 
 ## Process
@@ -24,6 +25,7 @@ Write a complete, high-quality user story ready for any backlog tool.
 ### 2. Draft the Story
 
 **Title**: Action-oriented, concise, starts with a verb.
+
 - Good: "Add email notification after order approval"
 - Bad: "Email improvement" or "Feature: better emails"
 
@@ -53,7 +55,7 @@ Include at minimum:
 - **Scope**: Small / Medium / Large (relative estimate)
 - **Dependencies**: [other stories, services, or decisions this is blocked by]
 - **Constraints**: [performance requirements, compatibility, regulatory, etc.]
-- **Files likely affected**: [key modules — only if codebase context is available]
+- **Files likely affected**: [key modules — only if codebase context is available from step 1]
 ```
 
 ### 3. Validate with INVEST
@@ -70,14 +72,33 @@ Check every story against all six criteria before finalizing:
 | **Testable** | Can every acceptance criterion be verified with a concrete test? | "Works correctly", "Handles all edge cases" |
 
 If a criterion fails, fix the story before output. Common fixes:
+
 - **Too large** — Split vertically by user-visible slice, not by technical layer
 - **Not independent** — Merge with the dependency or extract a shared prerequisite
 - **Not valuable** — Rewrite with a real user outcome, or reclassify as a technical task
 - **Not testable** — Replace vague criteria with specific Given/When/Then
 
-### 4. Final Quality Check
+### 4. Produce Structured Output
+
+Construct the YAML frontmatter metadata block:
+
+- `type`: always `story`
+- `title`: the verb-led title from step 2
+- `parent`: parent epic title, if known
+- `labels`: prefix with `area:` for domain labels
+- `priority`: `critical`, `high`, `medium`, or `low`
+- `size`: `XS`, `S`, `M`, `L`, or `XL`
+- `story_points`: Fibonacci number (1, 2, 3, 5, 8, 13, 21); omit if estimating by size only
+- `status`: always `draft`
+- `dependencies`: list of `blocked_by` objects with `reason`; omit if none
+- `acceptance_criteria`: the same criteria as in the body, as a structured list for downstream tools
+
+Acceptance criteria appear in **both** the YAML metadata (structured list for downstream tools) and the markdown body (human-readable checklist with `- [ ]`). This deliberate duplication serves both audiences.
+
+### 5. Final Quality Check
 
 Before presenting the story, verify:
+
 - [ ] Title starts with a verb and is under 10 words
 - [ ] Role is specific (not "user" or "developer" unless that truly is the role)
 - [ ] Benefit is an outcome, not a restatement of the capability
@@ -88,4 +109,45 @@ Before presenting the story, verify:
 - [ ] Scope estimate is present
 
 ## Output
-Print the complete user story as markdown. Include a one-line summary of what the story covers.
+
+Print YAML frontmatter followed by the markdown body. Example:
+
+```yaml
+---
+type: story
+title: "Send email notification after order approval"
+parent: "Order Management Workflow"
+labels:
+  - "area:notifications"
+  - "area:orders"
+priority: medium
+size: M
+story_points: 5
+status: draft
+dependencies:
+  - blocked_by: "Implement order approval workflow"
+    reason: "Approval event must exist before notification can trigger"
+acceptance_criteria:
+  - "Given an order is approved, when the approval is saved, then an email is sent to the customer within 60 seconds"
+  - "Given the customer has no email on file, when an approval triggers notification, then no email is sent and a warning is logged"
+  - "Given the email service is unavailable, when a notification is triggered, then the send is retried up to 3 times"
+---
+
+## User Story
+
+As an **online customer**,
+I want to receive an email notification when my order is approved,
+so that I know my order is being processed without needing to check the website.
+
+## Acceptance Criteria
+
+- [ ] Given an order is approved, when the approval is saved, then an email is sent within 60 seconds
+- [ ] Given the customer has no email on file, then no email is sent and a warning is logged
+- [ ] Given the email service is unavailable, then the send is retried up to 3 times
+- [ ] Email contains: order number, items ordered, estimated delivery date
+
+## Technical Notes
+
+- **Dependencies**: Requires the order approval event from the order workflow service
+- **Constraints**: Email must be sent asynchronously; must comply with CAN-SPAM
+```

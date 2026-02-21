@@ -67,13 +67,14 @@ QA lead for test strategy and test lifecycle management.
 
 ### product-owner
 
-Product owner for roadmap planning and work sequencing.
+Product owner for roadmap planning, requirement authoring, and structured output for issue tracking.
 
 | Type | Name | Description |
 |------|------|-------------|
 | Agent | `product-owner` | Roadmap keeper that advises on sequencing, priorities, and phase transitions |
-| Skill | `/write-user-story` | Write a well-structured user story with acceptance criteria and INVEST validation |
-| Skill | `/create-epic` | Create an epic specification with scope, success criteria, and sequenced story breakdown |
+| Skill | `/write-epic` | Write an epic specification with structured metadata compatible with GitHub Issues and Jira |
+| Skill | `/write-story` | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
+| Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata |
 
 ### cloud-infra-aws
 
@@ -171,8 +172,9 @@ claude-code-digital-coworkers/
     │   ├── agents/
     │   │   └── product-owner.md
     │   └── skills/
-    │       ├── write-user-story/SKILL.md
-    │       └── create-epic/SKILL.md
+    │       ├── write-epic/SKILL.md
+    │       ├── write-story/SKILL.md
+    │       └── decompose-requirement/SKILL.md
     └── cloud-infra-aws/
         ├── .claude-plugin/plugin.json
         ├── agents/
