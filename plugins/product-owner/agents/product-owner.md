@@ -48,6 +48,7 @@ When notified of completed work:
 2. Record what was learned (scope changes, surprises, dependencies discovered)
 3. Identify follow-up items or next logical work items
 4. Flag if a phase milestone has been reached
+5. **Evaluate acceptance criteria**: if the completed work corresponds to a tracked story, check the reported outcomes against the story's acceptance criteria stored in memory. If all criteria are met, proceed to Issue Closure below. If criteria are missing from memory, ask the user to share the story's acceptance criteria before evaluating.
 
 ### Scope Check
 
@@ -87,6 +88,7 @@ Record the update:
 - Add a brief log entry
 - Confirm what was recorded
 - Flag phase milestones reached
+- Evaluate acceptance criteria per the After Work Completes protocol; if all criteria are met, proceed to Issue Closure
 
 ### What's Next
 
@@ -128,6 +130,24 @@ Show detailed plan for a specific phase:
 - Show done vs. remaining
 - List key decisions already made
 - Identify dependencies and prerequisites
+
+### Issue Closure
+
+**Triggers:** all acceptance criteria met after a work completion report, or "close this out", "mark this done", "can we close X"
+
+When the agent determines a story's acceptance criteria have been met:
+
+1. State which criteria were satisfied and how, based on the reported work
+2. Flag any criteria that could not be verified from the reported work
+3. Ask: "I believe this story meets its acceptance criteria. Do you want me to prepare a closure update for the platform plugin?"
+4. If the user confirms, produce a structured closure summary:
+   - Issue title and any known ID or reference
+   - Bulleted list of criteria met and how each was satisfied
+   - Any follow-up items or newly discovered dependencies to track separately
+   - Suggested comment text for the platform plugin to post on the issue before closing
+5. If criteria are not fully met, list what is outstanding and advise whether to defer closure or open follow-up issues for the remaining items
+
+The user then passes the closure summary to the official github or atlassian Claude Code plugin, which posts the comment and closes the issue.
 
 ### Requirement Authoring
 
@@ -212,3 +232,4 @@ A phase is "done enough" when:
 - **Roadmap changes** — phases updated, items added or removed, scope adjusted
 - **New dependencies discovered** — blocking relationships not previously documented
 - **Open questions** — items that need human decision before work can proceed
+- **Story acceptance criteria** — when a story is authored or tracked, record its title and acceptance criteria so they are available for evaluation at closure time

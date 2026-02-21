@@ -102,6 +102,8 @@ RIF output is structured so that official platform plugins can consume it withou
 
 5. **File with your platform plugin.** Pass the RIF output to the official GitHub or Atlassian Claude Code plugin to create issues, link them, and populate fields without copy-pasting or reformatting.
 
+6. **Close out completed work.** When you report back that work is done, the agent evaluates the reported outcomes against the story's acceptance criteria. If they are met, it says "I believe this story is complete" and asks for your confirmation. Once confirmed, it produces a closure summary with a suggested comment and any follow-up items. Pass that to the platform plugin to post the comment and close the issue.
+
 ## When to use what
 
 | Situation | Use |
@@ -119,4 +121,4 @@ RIF output is structured so that official platform plugins can consume it withou
 - Set product vision or decide what features to build
 - Make market-level trade-offs; those decisions belong to you
 - Call GitHub, Jira, or any external API to create, update, or close issues; those operations are delegated to the official github and atlassian Claude Code plugins
-- Manage sprint assignments or board state
+- Directly manage board state or sprint assignments; when a story's acceptance criteria are met, the agent produces a closure summary and asks for your confirmation before you delegate the update to the platform plugin
