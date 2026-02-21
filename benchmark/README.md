@@ -68,7 +68,7 @@ A `suite.yaml` has four sections:
 suite:
   name: "Human-readable suite name"
   description: "What this benchmark tests"
-  agent: "plugins/cloud-infra-aws/agents/aws-solutions-architect.md"  # relative to repo root
+  agent: "plugins/cloud-engineering-aws/agents/aws-solutions-architect.md"  # relative to repo root
   dataset: "questions.json"  # relative to suite directory
 ```
 

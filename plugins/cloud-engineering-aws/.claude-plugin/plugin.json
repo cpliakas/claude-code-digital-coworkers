@@ -1,5 +1,5 @@
 {
-  "name": "cloud-infra-aws",
+  "name": "cloud-engineering-aws",
   "description": "AWS cloud infrastructure agents for DevOps strategy, solutions architecture, and CloudFormation",
-  "version": "0.2.1"
+  "version": "0.3.0"
 }
