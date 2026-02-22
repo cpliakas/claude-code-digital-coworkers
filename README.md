@@ -20,19 +20,21 @@ If you're looking for well-maintained, general-purpose collections of Claude Cod
 
 Most agent collections are flat lists where each agent is independent and self-contained. Here, agents are organized as a team with explicit roles, hierarchy, and delegation chains defined in their markdown files.
 
-The `cloud-engineering-aws` plugin illustrates this. `devops-lead` sets tool-agnostic principles (deployment strategies, observability requirements, IaC standards). `aws-solutions-architect` translates those principles into AWS-specific architecture decisions, consulting `devops-lead` to validate that its recommendations serve broader DevOps patterns. `cloudformation-specialist` implements what the architect specifies, consulting upstream when unsure whether a design choice (e.g., nested vs. separate stacks) is correct. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
+The `cloud-engineering-aws` plugin illustrates this: `devops-lead` sets tool-agnostic principles, `aws-solutions-architect` translates those into AWS-specific architecture decisions, and `cloudformation-specialist` implements what the architect specifies. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
 
-Across plugins, the same pattern holds at different levels. `product-owner` advises on sequencing and priorities but never implements, acting as a consultative agent that checks proposed work against the roadmap. `qa-lead` owns the full test lifecycle and consults `security-engineer` for security-related tests. `security-engineer` doesn't delegate at all and exists as a leaf node consulted by others during review cycles.
+### Product owner as a guardrail against drift
+
+One risk of delegating implementation to agents is losing sight of what actually matters. The `product-owner` agent is intended as a check on that: it maintains roadmap context, advises on sequencing, and pushes back when proposed work doesn't align with current priorities.
+
+The hope is that pairing an IC with a product owner agent reduces the temptation to rabbit-hole on interesting problems at the expense of real progress. The `/write-epic`, `/write-story`, and `/decompose-requirement` skills produce structured artifacts that can land directly in GitHub Issues or Jira, keeping the backlog organized with well-refined user stories.
 
 ### Benchmark harness for measurable agent quality
 
 Agent definitions are easy to write and hard to evaluate. The benchmark harness (`benchmark/benchmark.py`) provides a structured way to test whether an agent's knowledge and reasoning actually hold up.
 
-The approach is config-driven. Each benchmark is a **suite**: a `suite.yaml` that defines prompt templates, scoring criteria, and dataset field mappings, plus a dataset of question-answer pairs. The harness sends each scenario to the agent, then passes the agent's response to a separate LLM judge for scoring. Adding a new suite requires no harness code changes, just a config file and a dataset.
+Each benchmark is a **suite**: a `suite.yaml` defining prompt templates, scoring criteria, and a dataset of question-answer pairs. The harness sends each scenario to the agent, then passes the response to an LLM judge for scoring. Adding a new suite requires no harness code changes, just a config file and a dataset.
 
-Two scoring modes exist today. **Binary** mode checks correctness: did the agent recommend the right AWS services for the scenario? **Dimensional** mode scores across multiple quality axes (answer accuracy, cost surfacing, specificity, pillar coverage, risk classification, structured format) on a 1-5 scale, with aggregate statistics and weakness keyword analysis.
-
-The current suite tests `aws-solutions-architect` against 494 SAA-C03 exam scenarios. The intention is to make this generic so that any agent can take a suite of benchmarks, creating a real validation loop rather than undifferentiated agent definitions. See [`benchmark/README.md`](benchmark/README.md) for the full CLI reference and how to create new suites.
+The current suite tests `aws-solutions-architect` against 494 SAA-C03 exam scenarios. See [`benchmark/README.md`](benchmark/README.md) for the full CLI reference and how to create new suites.
 
 ## Quick Start
 
