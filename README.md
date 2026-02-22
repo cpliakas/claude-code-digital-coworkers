@@ -26,7 +26,7 @@ The `cloud-engineering-aws` plugin illustrates this: `devops-lead` sets tool-agn
 
 One risk of delegating implementation to agents is losing sight of what actually matters. The `product-owner` agent is intended as a check on that: it maintains roadmap context, advises on sequencing, and pushes back when proposed work doesn't align with current priorities.
 
-The hope is that pairing an IC with a product owner agent reduces the temptation to rabbit-hole on interesting problems at the expense of real progress. The `/write-epic`, `/write-story`, and `/decompose-requirement` skills produce structured artifacts that can land directly in GitHub Issues or Jira, keeping the backlog organized with well-refined user stories.
+The hope is that agents coordinating with the product owner execute with better context, and that humans get clearer guidance on sequencing toward broader goals. The `/write-epic`, `/write-story`, and `/decompose-requirement` skills produce structured artifacts that land directly in GitHub Issues or Jira, keeping the backlog organized with well-refined user stories.
 
 ### Benchmark harness for measurable agent quality
 
@@ -54,55 +54,55 @@ Add the marketplace to your Claude Code project, then install the plugins you ne
 
 Security specialist for vulnerability detection and code security review.
 
-| Type | Name | Description |
-|------|------|-------------|
+| Type  | Name                | Description                                                                                |
+| ----- | ------------------- | ------------------------------------------------------------------------------------------ |
 | Agent | `security-engineer` | Catches vulnerabilities before they ship (OWASP Top 10, dependency risk, secret detection) |
-| Skill | `/security-scan` | Run a security checklist against staged changes, a branch diff, or a specific file |
+| Skill | `/security-scan`    | Run a security checklist against staged changes, a branch diff, or a specific file         |
 
 ### qa-lead
 
 QA lead for test strategy and test lifecycle management.
 
-| Type | Name | Description |
-|------|------|-------------|
+| Type  | Name      | Description                                                                                         |
+| ----- | --------- | --------------------------------------------------------------------------------------------------- |
 | Agent | `qa-lead` | QA lead covering test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis |
 
 ### product-owner
 
 Product owner for roadmap planning, requirement authoring, and structured output for issue tracking.
 
-| Type | Name | Description |
-|------|------|-------------|
-| Agent | `product-owner` | Roadmap keeper that advises on sequencing, priorities, and phase transitions |
-| Skill | `/write-epic` | Write an epic specification with structured metadata compatible with GitHub Issues and Jira |
-| Skill | `/write-story` | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
-| Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata |
+| Type  | Name                     | Description                                                                                              |
+| ----- | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Agent | `product-owner`          | Roadmap keeper that advises on sequencing, priorities, and phase transitions                             |
+| Skill | `/write-epic`            | Write an epic specification with structured metadata compatible with GitHub Issues and Jira              |
+| Skill | `/write-story`           | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
+| Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata                  |
 
 ### cloud-engineering-aws
 
 AWS cloud infrastructure agents covering DevOps strategy, solutions architecture, and CloudFormation implementation.
 
-| Type | Name | Description |
-|------|------|-------------|
-| Agent | `devops-lead` | Infrastructure team lead for CI/CD, deployment strategies, and environment management |
-| Agent | `aws-solutions-architect` | AWS Well-Architected Framework specialist for service selection, cost optimization, and security posture |
-| Agent | `cloudformation-specialist` | CF template authoring covering stack lifecycle, drift detection, and nested stacks |
-| Skill | `/lookup-aws-service` | Look up AWS service capability cards for service selection decisions |
-| Skill | `/cf-lint` | Validate a CloudFormation template against best practices and common errors |
-| Skill | `/well-architected-review` | Evaluate infrastructure changes against all 6 Well-Architected pillars |
+| Type  | Name                        | Description                                                                                              |
+| ----- | --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Agent | `devops-lead`               | Infrastructure team lead for CI/CD, deployment strategies, and environment management                    |
+| Agent | `aws-solutions-architect`   | AWS Well-Architected Framework specialist for service selection, cost optimization, and security posture |
+| Agent | `cloudformation-specialist` | CF template authoring covering stack lifecycle, drift detection, and nested stacks                       |
+| Skill | `/lookup-aws-service`       | Look up AWS service capability cards for service selection decisions                                     |
+| Skill | `/cf-lint`                  | Validate a CloudFormation template against best practices and common errors                              |
+| Skill | `/well-architected-review`  | Evaluate infrastructure changes against all 6 Well-Architected pillars                                   |
 
 ## Architecture
 
 ### Agents vs Skills
 
-| | Agent | Skill |
-|---|---|---|
-| **What** | A specialist persona with domain expertise | A repeatable procedure / SOP |
-| **Memory** | Yes, learns across sessions | No, runs the same way each time |
-| **Judgment** | Yes, decides *how* to approach problems | No, follows a defined process |
-| **Think of it as** | An IC you hired | A runbook in a wiki |
+|                    | Agent                                      | Skill                           |
+| ------------------ | ------------------------------------------ | ------------------------------- |
+| **What**           | A specialist persona with domain expertise | A repeatable procedure / SOP    |
+| **Memory**         | Yes, learns across sessions                | No, runs the same way each time |
+| **Judgment**       | Yes, decides _how_ to approach problems    | No, follows a defined process   |
+| **Think of it as** | An IC you hired                            | A runbook in a wiki             |
 
-**Rule of thumb**: If it needs to *learn and decide*, it's an agent. If it needs to *execute a procedure*, it's a skill.
+**Rule of thumb**: If it needs to _learn and decide_, it's an agent. If it needs to _execute a procedure_, it's a skill.
 
 ### Agent Hierarchy
 
@@ -134,9 +134,9 @@ python3 benchmark.py suites/aws-solutions-architect --mode direct --sample 20
 python3 benchmark.py suites/aws-solutions-architect --mode reasoning --tools --sample 20
 ```
 
-| Suite | Agent | Questions | Description |
-|-------|-------|-----------|-------------|
-| `aws-solutions-architect` | `aws-solutions-architect` | 494 | SAA-C03 exam scenarios |
+| Suite                     | Agent                     | Questions | Description            |
+| ------------------------- | ------------------------- | --------- | ---------------------- |
+| `aws-solutions-architect` | `aws-solutions-architect` | 494       | SAA-C03 exam scenarios |
 
 See [`benchmark/README.md`](benchmark/README.md) for the full CLI reference and how to create new suites.
 
