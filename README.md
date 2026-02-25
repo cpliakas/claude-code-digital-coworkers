@@ -1,8 +1,6 @@
 # Claude Code Digital Coworkers
 
-> **Hypothesis**: Similar to how public cloud redefined what one ops engineer could manage, AI agents may redefine what one IC can take on by delegating to digital specialists that learn on the job.
-
-A Claude Code plugin marketplace of reusable **digital coworkers**: specialist agents and skills that can be installed across projects. Each coworker brings generic domain expertise while accumulating project-specific memory on the job.
+A collection of Claude Code plugins that give AI a well-defined operating context before it writes a single line of code. Most plugins in the broader community focus on a specific technical capability. This project takes a different angle: the plugins here focus on the context layer, giving AI the standards, constraints, and sequencing signals it needs to make better decisions about what to build and how to build it.
 
 ## About This Project
 
@@ -48,15 +46,17 @@ Add the marketplace to your Claude Code project, then install the plugins you ne
 
 ## Plugins
 
-### product-owner
+### product-ops
 
-Product owner for roadmap planning, requirement authoring, and structured output for issue tracking.
+Product operations for roadmap planning, requirement authoring, and structured output for issue tracking.
 
 | Type  | Name                     | Description                                                                                              |
 | ----- | ------------------------ | -------------------------------------------------------------------------------------------------------- |
 | Agent | `product-owner`          | Roadmap keeper that advises on sequencing, priorities, and phase transitions                             |
+| Agent | `agile-coach`            | Peer coach that reviews story drafts against INVEST criteria and seven agile coaching principles         |
 | Skill | `/write-epic`            | Write an epic specification with structured metadata compatible with GitHub Issues and Jira              |
 | Skill | `/write-story`           | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
+| Skill | `/refine-story`          | Score a story draft against INVEST and agile coaching principles; returns a structured report            |
 | Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata                  |
 
 ### cloud-engineering-aws
@@ -138,13 +138,15 @@ claude-code-digital-coworkers/
 │           ├── suite.yaml
 │           └── questions.json
 └── plugins/
-    ├── product-owner/
+    ├── product-ops/
     │   ├── .claude-plugin/plugin.json
     │   ├── agents/
-    │   │   └── product-owner.md
+    │   │   ├── product-owner.md
+    │   │   └── agile-coach.md
     │   └── skills/
     │       ├── write-epic/SKILL.md
     │       ├── write-story/SKILL.md
+    │       ├── refine-story/SKILL.md
     │       └── decompose-requirement/SKILL.md
     └── cloud-engineering-aws/
         ├── .claude-plugin/plugin.json
