@@ -52,7 +52,7 @@ Include at minimum:
 - 1 criterion for test coverage expectations
 
 ## Technical Notes
-- **Scope**: Small / Medium / Large (relative estimate)
+- **Scope**: XS / S / M / L / XL (relative size estimate)
 - **Recommended model**: [haiku | sonnet | opus] — [one-sentence rationale]
 - **Dependencies**: [other stories, services, or decisions this is blocked by]
 - **Constraints**: [performance requirements, compatibility, regulatory, etc.]
@@ -105,9 +105,7 @@ Construct the YAML frontmatter metadata block:
 - `title`: the verb-led title from step 2
 - `parent`: parent epic title, if known
 - `labels`: prefix with `area:` for domain labels
-- `priority`: `critical`, `high`, `medium`, or `low`
 - `size`: `XS`, `S`, `M`, `L`, or `XL`
-- `story_points`: Fibonacci number (1, 2, 3, 5, 8, 13, 21); omit if estimating by size only
 - `status`: always `draft`
 - `recommended_model`: `haiku`, `sonnet`, or `opus` — determined in step 4
 - `dependencies`: list of `blocked_by` objects with `reason`; omit if none
@@ -126,7 +124,7 @@ Before presenting the story, verify:
 - [ ] Error cases are covered — not just the happy path
 - [ ] No implementation details in the story body (those belong in technical notes only)
 - [ ] Technical notes describe constraints and outcomes, not methods
-- [ ] Scope estimate is present
+- [ ] Scope size is present
 - [ ] `recommended_model` is present and rationale is included in Technical Notes
 
 ## Output
@@ -141,9 +139,7 @@ parent: "Order Management Workflow"
 labels:
   - "area:notifications"
   - "area:orders"
-priority: medium
 size: M
-story_points: 5
 status: draft
 recommended_model: sonnet
 dependencies:
