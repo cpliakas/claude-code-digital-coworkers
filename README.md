@@ -16,11 +16,11 @@ If you're looking for well-maintained, general-purpose collections of Claude Cod
 
 ## What I'm Testing
 
-### Team structure, not isolated specialists
+### Coordination and oversight, not implementation workers
 
-Most agent collections are flat lists where each agent is independent and self-contained. Here, agents are organized as a team with explicit roles, hierarchy, and delegation chains defined in their markdown files.
+The agents here are valuable because they coordinate and provide oversight — setting principles, delegating, and evaluating — not because they do implementation work that Claude already handles well on its own.
 
-The `cloud-engineering-aws` plugin illustrates this: `devops-lead` sets tool-agnostic principles, `aws-solutions-architect` translates those into AWS-specific architecture decisions, and `cloudformation-specialist` implements what the architect specifies. Each agent's `Delegation` section names who it delegates to and who it consults, so the chain is explicit and inspectable.
+The `cloud-engineering-aws` plugin illustrates this with a two-tier model: `devops-lead` sets tool-agnostic infrastructure principles, and `aws-solutions-architect` translates those principles into AWS-specific architecture decisions. Each agent's `Delegation` section names who it consults and what it delegates, making the coordination chain explicit and inspectable.
 
 ### Product owner as a guardrail against drift
 
@@ -42,20 +42,11 @@ Add the marketplace to your Claude Code project, then install the plugins you ne
 
 ```
 /plugin marketplace add cpliakas/claude-code-digital-coworkers
-/plugin install qa-lead@digital-coworkers
 /plugin install product-owner@digital-coworkers
 /plugin install cloud-engineering-aws@digital-coworkers
 ```
 
 ## Plugins
-
-### qa-lead
-
-QA lead for test strategy and test lifecycle management.
-
-| Type  | Name      | Description                                                                                         |
-| ----- | --------- | --------------------------------------------------------------------------------------------------- |
-| Agent | `qa-lead` | QA lead covering test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis |
 
 ### product-owner
 
@@ -70,16 +61,15 @@ Product owner for roadmap planning, requirement authoring, and structured output
 
 ### cloud-engineering-aws
 
-AWS cloud infrastructure agents covering DevOps strategy, solutions architecture, and CloudFormation implementation.
+AWS cloud infrastructure agents covering DevOps strategy and solutions architecture.
 
-| Type  | Name                        | Description                                                                                              |
-| ----- | --------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Agent | `devops-lead`               | Infrastructure team lead for CI/CD, deployment strategies, and environment management                    |
-| Agent | `aws-solutions-architect`   | AWS Well-Architected Framework specialist for service selection, cost optimization, and security posture |
-| Agent | `cloudformation-specialist` | CF template authoring covering stack lifecycle, drift detection, and nested stacks                       |
-| Skill | `/lookup-aws-service`       | Look up AWS service capability cards for service selection decisions                                     |
-| Skill | `/cf-lint`                  | Validate a CloudFormation template against best practices and common errors                              |
-| Skill | `/well-architected-review`  | Evaluate infrastructure changes against all 6 Well-Architected pillars                                   |
+| Type  | Name                      | Description                                                                                              |
+| ----- | ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Agent | `devops-lead`             | Infrastructure team lead for CI/CD, deployment strategies, and environment management                    |
+| Agent | `aws-solutions-architect` | AWS Well-Architected Framework specialist for service selection, cost optimization, and security posture |
+| Skill | `/lookup-aws-service`     | Look up AWS service capability cards for service selection decisions                                     |
+| Skill | `/cf-lint`                | Validate a CloudFormation template against best practices and common errors                              |
+| Skill | `/well-architected-review` | Evaluate infrastructure changes against all 6 Well-Architected pillars                                  |
 
 ## Architecture
 
@@ -98,9 +88,8 @@ AWS cloud infrastructure agents covering DevOps strategy, solutions architecture
 
 Agents form teams with clear delegation chains:
 
-1. **Strategic lead** sets principles, tool-agnostic (e.g., `devops-lead`)
-2. **Domain specialist** applies a specific technology (e.g., `aws-solutions-architect`)
-3. **Implementation specialist** executes the solution (e.g., `cloudformation-specialist`)
+1. **Strategic lead** sets tool-agnostic principles (e.g., `devops-lead`)
+2. **Domain specialist** translates principles into technology decisions (e.g., `aws-solutions-architect`)
 
 ### Memory
 
@@ -149,10 +138,6 @@ claude-code-digital-coworkers/
 │           ├── suite.yaml
 │           └── questions.json
 └── plugins/
-    ├── qa-lead/
-    │   ├── .claude-plugin/plugin.json
-    │   └── agents/
-    │       └── qa-lead.md
     ├── product-owner/
     │   ├── .claude-plugin/plugin.json
     │   ├── agents/
@@ -165,8 +150,7 @@ claude-code-digital-coworkers/
         ├── .claude-plugin/plugin.json
         ├── agents/
         │   ├── devops-lead.md
-        │   ├── aws-solutions-architect.md
-        │   └── cloudformation-specialist.md
+        │   └── aws-solutions-architect.md
         └── skills/
             ├── cf-lint/SKILL.md
             ├── lookup-aws-service/
