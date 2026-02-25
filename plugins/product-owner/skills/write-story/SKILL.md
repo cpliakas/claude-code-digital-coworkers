@@ -53,6 +53,7 @@ Include at minimum:
 
 ## Technical Notes
 - **Scope**: Small / Medium / Large (relative estimate)
+- **Recommended model**: [haiku | sonnet | opus] — [one-sentence rationale]
 - **Dependencies**: [other stories, services, or decisions this is blocked by]
 - **Constraints**: [performance requirements, compatibility, regulatory, etc.]
 - **Files likely affected**: [key modules — only if codebase context is available from step 1]
@@ -78,7 +79,25 @@ If a criterion fails, fix the story before output. Common fixes:
 - **Not valuable** — Rewrite with a real user outcome, or reclassify as a technical task
 - **Not testable** — Replace vague criteria with specific Given/When/Then
 
-### 4. Produce Structured Output
+### 4. Select Model Tier
+
+Reason across three dimensions to select `recommended_model`:
+
+| Dimension | Question |
+|-----------|----------|
+| **Complexity** | How many files are affected? Does the task require multi-step reasoning or deep domain knowledge? |
+| **Latency tolerance** | Is this a quick task where fast turnaround matters, or a careful task where thoroughness is paramount? |
+| **Cost** | Is the task well-scoped enough to trust a faster, cheaper model? |
+
+**Selection rules:**
+
+- **haiku** — XS or S size, low ambiguity, single-file or narrow-scope changes, no cross-service coordination. Override to `sonnet` if any of the following are present: multi-step reasoning, API design, cross-file impact.
+- **sonnet** — M or L size, multi-step reasoning, cross-file changes, API design decisions, or ambiguous scope. Default for most stories.
+- **opus** — Correctness-critical work (security, data integrity, complex algorithms), deep multi-layer debugging, or stories where Sonnet has previously struggled on similar work. Always include explicit rationale when recommending opus.
+
+Record the chosen tier and a one-sentence rationale. Both appear in step 5 (frontmatter) and in the Technical Notes section of the story body.
+
+### 5. Produce Structured Output
 
 Construct the YAML frontmatter metadata block:
 
@@ -90,12 +109,13 @@ Construct the YAML frontmatter metadata block:
 - `size`: `XS`, `S`, `M`, `L`, or `XL`
 - `story_points`: Fibonacci number (1, 2, 3, 5, 8, 13, 21); omit if estimating by size only
 - `status`: always `draft`
+- `recommended_model`: `haiku`, `sonnet`, or `opus` — determined in step 4
 - `dependencies`: list of `blocked_by` objects with `reason`; omit if none
 - `acceptance_criteria`: the same criteria as in the body, as a structured list for downstream tools
 
 Acceptance criteria appear in **both** the YAML metadata (structured list for downstream tools) and the markdown body (human-readable checklist with `- [ ]`). This deliberate duplication serves both audiences.
 
-### 5. Final Quality Check
+### 6. Final Quality Check
 
 Before presenting the story, verify:
 
@@ -107,6 +127,7 @@ Before presenting the story, verify:
 - [ ] No implementation details in the story body (those belong in technical notes only)
 - [ ] Technical notes describe constraints and outcomes, not methods
 - [ ] Scope estimate is present
+- [ ] `recommended_model` is present and rationale is included in Technical Notes
 
 ## Output
 
@@ -124,6 +145,7 @@ priority: medium
 size: M
 story_points: 5
 status: draft
+recommended_model: sonnet
 dependencies:
   - blocked_by: "Implement order approval workflow"
     reason: "Approval event must exist before notification can trigger"
@@ -150,4 +172,5 @@ so that I know my order is being processed without needing to check the website.
 
 - **Dependencies**: Requires the order approval event from the order workflow service
 - **Constraints**: Email must be sent asynchronously; must comply with CAN-SPAM
+- **Recommended model**: sonnet — multi-step async flow with cross-service integration warrants the workhorse model
 ```
