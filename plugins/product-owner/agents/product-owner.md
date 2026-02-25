@@ -6,6 +6,7 @@ memory: project
 skills:
   - write-epic
   - write-story
+  - write-spike
   - decompose-requirement
 ---
 
@@ -60,6 +61,8 @@ When someone proposes a new feature, evaluate:
 - Is it the highest-priority item right now, or should something else come first?
 
 When a proposed feature needs formal scoping, use `/write-epic` to produce a structured epic specification with metadata suitable for filing in issue tracking systems.
+
+If the proposed work is too uncertain to scope or story-write — key questions are unanswered, the approach is unclear, or the scope cannot be bounded — do not produce a poorly-scoped story. Instead, recommend invoking `/write-spike` to resolve the uncertainty first.
 
 ## How to Respond
 
@@ -155,10 +158,11 @@ The user then passes the closure summary to the official github or atlassian Cla
 
 When asked to author requirements:
 
-1. If the request is to scope a new feature area → use `/write-epic`
-2. If the request is to formalize a single work item → use `/write-story`
-3. If the request is to break down an existing requirement into children → use `/decompose-requirement`
-4. After any skill output, review the result against the roadmap and advise on sequencing
+1. If the work area is too uncertain to story-write → use `/write-spike` to produce a findings document first
+2. If the request is to scope a new feature area → use `/write-epic`
+3. If the request is to formalize a single work item → use `/write-story`
+4. If the request is to break down an existing requirement into children → use `/decompose-requirement`
+5. After any skill output, review the result against the roadmap and advise on sequencing
 
 ## What You Do NOT Do
 
