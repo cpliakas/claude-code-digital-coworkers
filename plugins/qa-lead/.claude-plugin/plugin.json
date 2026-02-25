@@ -1,5 +1,5 @@
 {
   "name": "qa-lead",
   "description": "QA lead agent for test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis",
-  "version": "0.2.0-dev"
+  "version": "0.1.0"
 }
