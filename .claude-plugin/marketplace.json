@@ -5,12 +5,6 @@
   },
   "plugins": [
     {
-      "name": "security-engineer",
-      "source": "./plugins/security-engineer",
-      "description": "Security specialist agent and skills for vulnerability detection, dependency risk, and code security review",
-      "version": "0.1.0"
-    },
-    {
       "name": "qa-lead",
       "source": "./plugins/qa-lead",
       "description": "QA lead agent for test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis",

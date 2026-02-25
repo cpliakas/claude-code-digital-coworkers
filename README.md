@@ -42,22 +42,12 @@ Add the marketplace to your Claude Code project, then install the plugins you ne
 
 ```
 /plugin marketplace add cpliakas/claude-code-digital-coworkers
-/plugin install security-engineer@digital-coworkers
 /plugin install qa-lead@digital-coworkers
 /plugin install product-owner@digital-coworkers
 /plugin install cloud-engineering-aws@digital-coworkers
 ```
 
 ## Plugins
-
-### security-engineer
-
-Security specialist for vulnerability detection and code security review.
-
-| Type  | Name                | Description                                                                                |
-| ----- | ------------------- | ------------------------------------------------------------------------------------------ |
-| Agent | `security-engineer` | Catches vulnerabilities before they ship (OWASP Top 10, dependency risk, secret detection) |
-| Skill | `/security-scan`    | Run a security checklist against staged changes, a branch diff, or a specific file         |
 
 ### qa-lead
 
@@ -159,12 +149,6 @@ claude-code-digital-coworkers/
 │           ├── suite.yaml
 │           └── questions.json
 └── plugins/
-    ├── security-engineer/
-    │   ├── .claude-plugin/plugin.json
-    │   ├── agents/
-    │   │   └── security-engineer.md
-    │   └── skills/
-    │       └── security-scan/SKILL.md
     ├── qa-lead/
     │   ├── .claude-plugin/plugin.json
     │   └── agents/
