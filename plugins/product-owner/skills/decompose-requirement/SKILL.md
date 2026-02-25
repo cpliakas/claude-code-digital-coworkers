@@ -73,6 +73,13 @@ These are **outlines, not full specifications**. The user can run `/write-story`
 
 ## Output
 
+Each child's markdown body MUST use `###` headings in this order:
+
+1. `### User Story`
+2. `### Acceptance Criteria`
+
+Optional fields: omit entirely if empty. Never include blank bullets or placeholder text.
+
 A summary table first, then individual child specs.
 
 ```

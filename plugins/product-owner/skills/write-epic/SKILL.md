@@ -84,6 +84,18 @@ Check the overall epic before finalizing:
 
 ## Output
 
+The markdown body MUST follow this exact section order with `##` headings:
+
+1. `## Problem Statement`
+2. `## Desired Outcome`
+3. `## Success Metrics`
+4. `## Scope`
+5. `## Dependencies and Risks`
+
+Additional rules:
+
+- **Optional fields** (`dependencies`): omit entirely if empty. Never include blank bullets, "None", or placeholder text.
+
 Print YAML frontmatter followed by the markdown body. Example:
 
 ```yaml
