@@ -162,6 +162,10 @@ Before presenting the story, verify:
 - [ ] Scope size is present
 - [ ] `recommended_model` is present and rationale is included in Technical Notes
 
+### 7. Peer Review
+
+Run `/refine-story` on the draft story. Review the feedback and apply all failing items: rewrite implementation-bound ACs, add missing DoD, fix INVEST failures, reclassify horizontal work. Produce the final revised story followed by a `## Change Summary` section listing what was changed and why (one bullet per change). If no changes were needed, omit the Change Summary.
+
 ## Output
 
 For **sprint-ready** stories, the markdown body MUST follow this exact section order with `##` headings:
@@ -170,6 +174,7 @@ For **sprint-ready** stories, the markdown body MUST follow this exact section o
 2. `## Acceptance Criteria`
 3. `## Technical Notes`
 4. `## Definition of Done` *(optional — only when story-specific DoD items exist beyond the project standard)*
+5. `## Change Summary` *(optional — present only when Step 7 peer review resulted in revisions; one bullet per change with rationale)*
 
 Additional rules:
 

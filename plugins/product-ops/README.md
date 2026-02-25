@@ -1,6 +1,8 @@
-# product-owner
+# product-ops
 
 A Claude Code plugin that brings product ownership discipline to AI-assisted development: roadmap awareness, requirement quality, and structured output designed to flow into GitHub Issues and Jira.
+
+Product operations is the operational layer beneath product management — the systems, practices, and hygiene work that keep teams moving efficiently. This plugin focuses on the requirement quality and backlog health side of that problem: Is work scoped precisely enough to implement? Is it sequenced correctly? Does it meet the quality bar before it reaches a sprint?
 
 ## What this plugin does
 
@@ -12,7 +14,7 @@ The plugin has two modes:
 
 **Work sequencing:** The `product-owner` agent reads your roadmap and advises on ordering, prerequisites, and phase transitions. It pushes back when proposed work skips a dependency or conflicts with what's planned next. It doesn't decide what to build or why; it organizes and sequences the work within the direction you've already set.
 
-**Requirement authoring:** Four skills (`/write-spike`, `/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements. Use `/write-spike` when a work area is too uncertain to scope directly; the other three skills take the output forward.
+**Requirement authoring:** Four skills (`/write-spike`, `/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements. Use `/write-spike` when a work area is too uncertain to scope directly; the other three skills take the output forward. `/write-story` automatically invokes `/refine-story` as a peer review step before producing the final output.
 
 ## Architecture
 
@@ -35,7 +37,7 @@ This plugin owns Layer 3 only. It produces high-quality requirement artifacts an
 
 ## How the pieces fit together
 
-### The agent: sequencing layer
+### The agents: sequencing and coaching layer
 
 The `product-owner` agent is a consultative peer, not an implementer. It maintains a roadmap in project memory and uses it to evaluate every significant work request before coding begins.
 
@@ -49,9 +51,11 @@ Invoke it after completing significant work:
 
 When the conversation turns to authoring requirements, the agent delegates to the skills below.
 
+The `agile-coach` agent is a peer coach for story quality review. It scores story drafts against INVEST criteria and seven coaching principles, returning a structured report with specific rewrites for every failure. Consult it before a story enters the backlog to catch scope boundary problems, implementation-bound acceptance criteria, missing Definition of Done, or horizontal work masquerading as a user story. `agile-coach` and `product-owner` are peers — neither reports to the other.
+
 ### The skills: authoring layer
 
-The four skills form a natural progression from broad to specific:
+The skills form a natural progression from broad to specific, with a quality gate before backlog entry:
 
 ```
 Uncertain work area
@@ -77,8 +81,13 @@ Feature idea (ready to scope)
     │
     ▼
 /write-story ──────────── Formalize each work item
-                          INVEST validation, Given/When/Then
-                          acceptance criteria, technical notes
+    │                     INVEST validation, Given/When/Then
+    │                     acceptance criteria, technical notes
+    │
+    ▼
+/refine-story ─────────── Quality gate (called by /write-story)
+                          INVEST scorecard, 7 coaching principles,
+                          specific rewrites for every failure
 ```
 
 Each skill produces output in the **Requirement Interchange Format (RIF)**: a YAML frontmatter block containing machine-parseable metadata, followed by a human-readable markdown body. The same artifact serves both audiences.
@@ -106,7 +115,7 @@ RIF output is structured so that official platform plugins can consume it withou
 
 3. **Run `/decompose-requirement`** on the epic to break it into stories. Each story gets its own YAML block with `parent` pointing back to the epic. The output includes a sequencing table showing dependencies and parallelization opportunities.
 
-4. **Run `/write-story`** on individual stories that need full specification. The skill runs INVEST validation and produces a complete story with Given/When/Then acceptance criteria duplicated in both the YAML metadata and the markdown body.
+4. **Run `/write-story`** on individual stories that need full specification. The skill runs INVEST validation, produces a complete story with Given/When/Then acceptance criteria, and automatically runs `/refine-story` as a peer review step. The final output includes a Change Summary when the peer review resulted in revisions.
 
 5. **File with your platform plugin.** Pass the RIF output to the official GitHub or Atlassian Claude Code plugin to create issues, link them, and populate fields without copy-pasting or reformatting.
 
@@ -119,11 +128,13 @@ RIF output is structured so that official platform plugins can consume it withou
 | "Should we build X now or later?" | `product-owner` agent |
 | "What's left in this phase?" | `product-owner` agent |
 | "We finished Y. What's next?" | `product-owner` agent |
+| "Review this story draft before I file it" | `agile-coach` agent |
 | "This area is too uncertain to scope or story-write" | `/write-spike` |
 | "Scope out a new feature area" | `/write-epic` |
 | "Break this epic into stories" | `/decompose-requirement` |
 | "Break this story into subtasks" | `/decompose-requirement` |
 | "Write a proper story for this requirement" | `/write-story` |
+| "Score this draft against INVEST and coaching principles" | `/refine-story` |
 
 ## What this plugin does not do
 
