@@ -5,12 +5,6 @@
   },
   "plugins": [
     {
-      "name": "qa-lead",
-      "source": "./plugins/qa-lead",
-      "description": "QA lead agent for test strategy, fixture design, mocking, coverage analysis, and flakiness diagnosis",
-      "version": "0.2.0-dev"
-    },
-    {
       "name": "product-owner",
       "source": "./plugins/product-owner",
       "description": "Product owner agent and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
@@ -19,8 +13,8 @@
     {
       "name": "cloud-engineering-aws",
       "source": "./plugins/cloud-engineering-aws",
-      "description": "AWS cloud infrastructure agents for DevOps strategy, solutions architecture, and CloudFormation",
-      "version": "0.4.0-dev"
+      "description": "AWS cloud infrastructure agents for DevOps strategy and solutions architecture",
+      "version": "0.5.0"
     }
   ]
 }
