@@ -164,17 +164,20 @@ Before presenting the story, verify:
 
 ## Output
 
-The markdown body MUST follow this exact section order with `##` headings:
+For **sprint-ready** stories, the markdown body MUST follow this exact section order with `##` headings:
 
 1. `## User Story`
 2. `## Acceptance Criteria`
 3. `## Technical Notes`
+4. `## Definition of Done` *(optional — only when story-specific DoD items exist beyond the project standard)*
 
 Additional rules:
 
 - **Acceptance criteria**: the text of each criterion MUST be identical in the YAML `acceptance_criteria` list and the `- [ ]` checkboxes in the markdown body. Do not paraphrase.
 - **Technical Notes format**: every item uses `**Label**: value` as a bullet — no prose paragraphs, no heading variations.
 - **Optional fields** (`dependencies`, `Files likely affected`): omit entirely if empty. Never include blank bullets, "None", or placeholder text.
+
+For **backlog** stories, see the Backlog-Tier Output section below — only `## User Story` is required.
 
 Print YAML frontmatter followed by the markdown body. Example:
 
