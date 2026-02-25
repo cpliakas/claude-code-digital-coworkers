@@ -12,7 +12,7 @@ The plugin has two modes:
 
 **Work sequencing:** The `product-owner` agent reads your roadmap and advises on ordering, prerequisites, and phase transitions. It pushes back when proposed work skips a dependency or conflicts with what's planned next. It doesn't decide what to build or why; it organizes and sequences the work within the direction you've already set.
 
-**Requirement authoring:** Three skills (`/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements into structured specifications. Output is designed to be filed directly in issue tracking systems without manual reformatting.
+**Requirement authoring:** Four skills (`/write-spike`, `/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements. Use `/write-spike` when a work area is too uncertain to scope directly; the other three skills take the output forward.
 
 ## Architecture
 
@@ -51,10 +51,18 @@ When the conversation turns to authoring requirements, the agent delegates to th
 
 ### The skills: authoring layer
 
-The three skills form a natural progression from broad to specific:
+The four skills form a natural progression from broad to specific:
 
 ```
-Feature idea
+Uncertain work area
+    │
+    ▼
+/write-spike ─────────── Resolve uncertainty first
+    │                    Problem restatement, options, findings,
+    │                    remaining unknowns, story seed
+    │
+    ▼
+Feature idea (ready to scope)
     │
     ▼
 /write-epic ──────────── Scope the initiative
@@ -111,6 +119,7 @@ RIF output is structured so that official platform plugins can consume it withou
 | "Should we build X now or later?" | `product-owner` agent |
 | "What's left in this phase?" | `product-owner` agent |
 | "We finished Y. What's next?" | `product-owner` agent |
+| "This area is too uncertain to scope or story-write" | `/write-spike` |
 | "Scope out a new feature area" | `/write-epic` |
 | "Break this epic into stories" | `/decompose-requirement` |
 | "Break this story into subtasks" | `/decompose-requirement` |
