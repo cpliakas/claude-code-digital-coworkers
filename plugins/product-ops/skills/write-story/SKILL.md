@@ -29,7 +29,26 @@ Write a complete, high-quality user story with structured metadata and a human-r
 
 Detailed specification should happen at pull time, not envisioning time. Stories deep in the backlog will change as the project evolves — investing in full acceptance criteria and technical notes for work that is months away produces waste. A lightweight backlog entry captures intent and scope; the full story gets written when the team is ready to start.
 
-### 2. Draft the Story
+### 2. Assess Context Sufficiency
+
+> **Gate:** If readiness is `backlog`, skip to the **Backlog-Tier Output** section.
+
+Before drafting, evaluate whether the input provides enough detail across four dimensions:
+
+| Dimension | Sufficient when | Prompt if underspecified |
+|-----------|----------------|--------------------------|
+| **Persona** | A specific role or actor is named or clearly implied | "Who is the primary user or actor for this requirement?" |
+| **Observable behavior** | The desired system behavior is concrete enough to demonstrate | "What should the system do — what would a user see or experience?" |
+| **Benefit / motivation** | A reason or outcome beyond restating the capability is present | "Why does this matter — what problem does it solve or what outcome does it enable?" |
+| **Scope boundaries** | At least a rough sense of what is in and out of scope is present | "What is explicitly out of scope or deferred for this work?" |
+
+**Outcome paths:**
+
+- **All sufficient** — proceed to Step 3 immediately. Do not prompt.
+- **One or more underspecified** — present targeted questions for only the underspecified dimensions in a single consolidated prompt. Incorporate the answers into your working context, then proceed to Step 3.
+- **No response (non-interactive context)** — infer reasonable answers from available project context (CLAUDE.md, roadmap, codebase). Record each inference in Technical Notes with the prefix "Inferred:" so the contributor can verify.
+
+### 3. Draft the Story
 
 > **Gate:** If readiness is `backlog`, skip to the **Backlog-Tier Output** section.
 
@@ -93,7 +112,7 @@ Examples of story-specific DoD items (include only when applicable):
 
 When present, place the `## Definition of Done` section after Technical Notes in the story body.
 
-### 3. Validate with INVEST
+### 4. Validate with INVEST
 
 Check every story against all six criteria before finalizing:
 
@@ -113,7 +132,7 @@ If a criterion fails, fix the story before output. Common fixes:
 - **Not valuable** — Rewrite with a real user outcome, or reclassify as a technical task
 - **Not testable** — Replace vague criteria with specific Given/When/Then
 
-### 4. Select Model Tier
+### 5. Select Model Tier
 
 Reason across three dimensions to select `recommended_model`:
 
@@ -129,26 +148,26 @@ Reason across three dimensions to select `recommended_model`:
 - **sonnet** — M or L size, multi-step reasoning, cross-file changes, API design decisions, or ambiguous scope. Default for most stories.
 - **opus** — Correctness-critical work (security, data integrity, complex algorithms), deep multi-layer debugging, or stories where Sonnet has previously struggled on similar work. Always include explicit rationale when recommending opus.
 
-Record the chosen tier and a one-sentence rationale. Both appear in step 5 (frontmatter) and in the Technical Notes section of the story body.
+Record the chosen tier and a one-sentence rationale. Both appear in step 6 (frontmatter) and in the Technical Notes section of the story body.
 
-### 5. Produce Structured Output
+### 6. Produce Structured Output
 
 Construct the YAML frontmatter metadata block:
 
 - `type`: always `story`
-- `title`: the verb-led title from step 2
+- `title`: the verb-led title from step 3
 - `parent`: parent epic title, if known
 - `labels`: prefix with `area:` for domain labels
 - `size`: `XS`, `S`, `M`, `L`, or `XL`
 - `status`: always `draft`
 - `readiness`: `backlog` or `sprint-ready` — determined in step 1
-- `recommended_model`: `haiku`, `sonnet`, or `opus` — determined in step 4
+- `recommended_model`: `haiku`, `sonnet`, or `opus` — determined in step 5
 - `dependencies`: list of `blocked_by` objects with `reason`; omit if none
 - `acceptance_criteria`: the same criteria as in the body, as a structured list for downstream tools
 
 Acceptance criteria appear in **both** the YAML metadata (structured list for downstream tools) and the markdown body (human-readable checklist with `- [ ]`). This deliberate duplication serves both audiences.
 
-### 6. Final Quality Check
+### 7. Final Quality Check
 
 Before presenting the story, verify:
 
@@ -162,9 +181,9 @@ Before presenting the story, verify:
 - [ ] Scope size is present
 - [ ] `recommended_model` is present and rationale is included in Technical Notes
 
-### 7. Peer Review
+### 8. Peer Review
 
-**Delivery guarantee:** This step MUST conclude with the complete formatted story (Sections 1 and 2 from step 5) as the primary output. Nothing — no review feedback, coaching report, or product concern — replaces or defers the story delivery.
+**Delivery guarantee:** This step MUST conclude with the complete formatted story (Sections 1 and 2 from step 6) as the primary output. Nothing — no review feedback, coaching report, or product concern — replaces or defers the story delivery.
 
 Run `/refine-story` on the draft story. Categorize every failing item into one of two categories and handle it accordingly:
 
@@ -194,7 +213,7 @@ For **sprint-ready** stories, the markdown body MUST follow this exact section o
 2. `## Acceptance Criteria`
 3. `## Technical Notes`
 4. `## Definition of Done` *(optional — only when story-specific DoD items exist beyond the project standard)*
-5. `## Change Summary` *(optional — present only when Step 7 peer review resulted in revisions; one bullet per change with rationale)*
+5. `## Change Summary` *(optional — present only when Step 8 peer review resulted in revisions; one bullet per change with rationale)*
 
 Additional rules:
 
@@ -255,7 +274,7 @@ so that I know my order is being processed without needing to check the website.
 
 ### Product Considerations (conditional)
 
-Present this section AFTER the complete story output (Sections 1 and 2) when Step 7 identified product concerns. This section is NOT part of the story artifact — it is not included in the YAML metadata or the story body.
+Present this section AFTER the complete story output (Sections 1 and 2) when Step 8 identified product concerns. This section is NOT part of the story artifact — it is not included in the YAML metadata or the story body.
 
 For each product concern:
 
@@ -265,7 +284,7 @@ For each product concern:
 
 End with: "For interactive coaching on any of these concerns, consult `agile-coach`."
 
-Omit this section entirely when no product concerns were identified in Step 7.
+Omit this section entirely when no product concerns were identified in Step 8.
 
 ### Backlog-Tier Output
 

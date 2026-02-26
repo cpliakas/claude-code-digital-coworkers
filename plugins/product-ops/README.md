@@ -111,20 +111,24 @@ RIF output is structured so that official platform plugins can consume it withou
 
 ### `/write-story` authoring flow
 
-The most complex skill in the plugin. This diagram traces the end-to-end path from invocation to delivered output, including the Step 1 readiness gate and the Step 7 peer-review category split.
+The most complex skill in the plugin. This diagram traces the end-to-end path from invocation to delivered output, including the Step 1 readiness gate, the Step 2 context sufficiency check, and the Step 8 peer-review category split.
 
 ```mermaid
 flowchart TD
     A["/write-story"] --> S1["1 · Gather Context"]
     S1 --> Gate{"Readiness?"}
     Gate -- "backlog" --> BT["Backlog-Tier Output<br/>(stub story only)"]
-    Gate -- "sprint-ready" --> S2["2 · Draft Story"]
-    S2 --> S3["3 · INVEST Validation"]
-    S3 --> S4["4 · Model Tier Selection"]
-    S4 --> S5["5 · Structured Output"]
-    S5 --> S6["6 · Final Quality Check"]
-    S6 --> S7["7 · /refine-story peer review"]
-    S7 --> Cat{"Categorize<br/>each failure"}
+    Gate -- "sprint-ready" --> S2["2 · Assess Context Sufficiency"]
+    S2 --> Suf{"All dimensions<br/>sufficient?"}
+    Suf -- "yes" --> S3
+    Suf -- "no" --> Prompt["Prompt for<br/>missing dimensions"]
+    Prompt --> S3
+    S3["3 · Draft Story"] --> S4["4 · INVEST Validation"]
+    S4 --> S5["5 · Model Tier Selection"]
+    S5 --> S6["6 · Structured Output"]
+    S6 --> S7["7 · Final Quality Check"]
+    S7 --> S8["8 · /refine-story peer review"]
+    S8 --> Cat{"Categorize<br/>each failure"}
     Cat -- "Craft issues" --> Fix["Apply fixes to story<br/>Record in Change Summary"]
     Cat -- "Product concerns" --> Collect["Collect for user"]
     Cat -- "All pass" --> Deliver
