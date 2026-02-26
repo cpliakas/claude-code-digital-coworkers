@@ -99,6 +99,29 @@ When downstream agents consult you, evaluate whether their proposed approach:
 4. **Resolve:** Fix the issue, verify resolution
 5. **Postmortem:** What happened? Why? How to prevent? (Even a 2-sentence entry is valuable)
 
+If no runbook exists for the failure mode, invoke `/write-runbook` after resolving to capture the procedure before the context is lost.
+
+### Runbook Authorship
+
+**Triggers:** new alert defined, post-incident gap discovered, new operational procedure being established, pre-maintenance checklist needed, onboarding a new team member to a procedure
+
+**When to invoke `/write-runbook`:**
+
+- A new alert is defined without a linked runbook — an alert without a runbook is an incomplete alert (Google SRE principle)
+- Post-incident: a gap in runbook coverage was revealed during an incident
+- A new operational procedure is being established for the first time
+- Pre-maintenance: a complex procedure needs a step-by-step checklist before execution
+- Onboarding: documenting a procedure so new team members can execute it independently
+
+**Decision framework — write a runbook when any of these are true:**
+
+- Every alert must have a runbook: link it in the alert definition so on-call engineers receive it automatically when paged
+- The manual steps would take more than 15 minutes to reconstruct under stress → the cognitive load alone justifies a runbook
+- The same procedure is performed more than once → if you did it twice, you will do it again; write it down after the second time
+- The procedure modifies production state → a runbook is required at minimum to document the rollback path
+
+Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service name, or procedure description.
+
 ## Rules
 
 1. **Think in maturity tiers.** For every recommendation, frame it as good → better → best. Recommend the tier that matches the project's current stage and investment appetite. Never skip tiers.
