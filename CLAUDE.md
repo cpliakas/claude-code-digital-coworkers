@@ -32,8 +32,10 @@ A Claude Code plugin marketplace containing reusable agents and skills organized
 ### Plugins
 - Each plugin has `.claude-plugin/plugin.json` at its root
 - Plugin names match directory names
-- Version using semver in plugin.json
-- Update `.claude-plugin/marketplace.json` when adding new plugins or bumping versions
+- Do NOT include a `version` field in individual `plugin.json` files — for relative-path plugins, `plugin.json` silently overrides the marketplace entry, causing version drift
+- **`.claude-plugin/marketplace.json` is the single source of truth for versions**
+- All plugins share the same version — bump all entries in `marketplace.json` together using semver when releasing changes to any plugin
+- No git tags are required; the version field in `marketplace.json` drives update detection
 
 ### Agent vs Skill Decision
 - If it needs to learn and decide → agent

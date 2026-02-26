@@ -1,5 +1,4 @@
 {
   "name": "product-ops",
-  "description": "Product ownership and agile coaching agents and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
-  "version": "0.8.0"
+  "description": "Product ownership and agile coaching agents and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira"
 }
