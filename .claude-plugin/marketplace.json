@@ -8,13 +8,13 @@
       "name": "product-owner",
       "source": "./plugins/product-ops",
       "description": "Product owner agent and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
-      "version": "0.7.1-dev"
+      "version": "0.7.0"
     },
     {
       "name": "cloud-engineering-aws",
       "source": "./plugins/cloud-engineering-aws",
       "description": "AWS cloud infrastructure agents for DevOps strategy and solutions architecture",
-      "version": "0.7.1-dev"
+      "version": "0.7.0"
     }
   ]
 }
