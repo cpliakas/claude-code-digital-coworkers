@@ -107,6 +107,64 @@ RIF output is structured so that official platform plugins can consume it withou
 | `dependencies` | Linked issues | Linked issues (blocks/blocked by) |
 | `parent` | Sub-issue parent | Epic Link |
 
+## Flow diagrams
+
+### `/write-story` authoring flow
+
+The most complex skill in the plugin. This diagram traces the end-to-end path from invocation to delivered output, including the Step 1 readiness gate and the Step 7 peer-review category split.
+
+```mermaid
+flowchart TD
+    A["/write-story"] --> S1["1 · Gather Context"]
+    S1 --> Gate{"Readiness?"}
+    Gate -- "backlog" --> BT["Backlog-Tier Output<br/>(stub story only)"]
+    Gate -- "sprint-ready" --> S2["2 · Draft Story"]
+    S2 --> S3["3 · INVEST Validation"]
+    S3 --> S4["4 · Model Tier Selection"]
+    S4 --> S5["5 · Structured Output"]
+    S5 --> S6["6 · Final Quality Check"]
+    S6 --> S7["7 · /refine-story peer review"]
+    S7 --> Cat{"Categorize<br/>each failure"}
+    Cat -- "Craft issues" --> Fix["Apply fixes to story<br/>Record in Change Summary"]
+    Cat -- "Product concerns" --> Collect["Collect for user"]
+    Cat -- "All pass" --> Deliver
+    Fix --> Deliver
+    Collect --> Deliver
+    Deliver["Deliver complete story<br/>(metadata + body)"]
+    Deliver --> PC{"Product<br/>concerns?"}
+    PC -- "Yes" --> Append["Append Product<br/>Considerations block"]
+    PC -- "No" --> Done(("End"))
+    Append --> Done
+```
+
+Craft issues are mechanical problems fixable without product judgment (AC wording, DoD placement, scope boundary gaps, INVEST failures with clear rewrites). Product concerns are substantive questions requiring user judgment (horizontal work, scope-fit, reclassification, cross-cutting dependencies).
+
+> **Note:** `agile-coach` is never consulted during `/write-story`. The `product-owner` applies craft fixes from `/refine-story` directly and surfaces product concerns to the user. For interactive coaching, consult `agile-coach` in a standalone session.
+
+### Agent delegation routing
+
+Shows when `product-owner` owns the review flow end-to-end vs. when `agile-coach` is consulted as a peer.
+
+```mermaid
+flowchart TD
+    Q{"When is the review<br/>happening?"}
+    Q -- "During /write-story" --> Mid
+    Q -- "Standalone review" --> SA
+
+    subgraph Mid["product-owner owns the flow"]
+        R1["/refine-story scores draft"] --> C1["Craft issues: apply directly"]
+        R1 --> C2["Product concerns: surface to user"]
+    end
+
+    subgraph SA["agile-coach consulted as peer"]
+        A1["agile-coach reviews story"] --> A2["Returns structured<br/>coaching report"]
+        A2 --> A3["product-owner reviews<br/>scope findings"]
+        A3 --> A4["Advises: defer, split,<br/>or reorder"]
+    end
+```
+
+In the standalone path, `agile-coach` hands off to `product-owner` when a story's scope belongs to a different phase, has unresolved sequencing dependencies, or was reclassified as a technical task. The `product-owner` then evaluates against the roadmap and advises on next steps.
+
 ## A typical workflow
 
 1. **Consult the agent** before starting a new feature area. It checks the roadmap, flags sequencing issues, and confirms this is the right next thing to work on.
