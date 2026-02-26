@@ -1,6 +1,6 @@
 ---
 name: write-story
-description: "Write a well-structured user story with structured metadata, acceptance criteria, and INVEST validation. Output includes machine-parseable YAML frontmatter compatible with GitHub Issues and Jira."
+description: "Write a well-structured user story with structured metadata, acceptance criteria, and INVEST validation. Output includes machine-parseable YAML metadata and a separate human-readable story body."
 user-invokable: true
 allowed-tools: Read, Grep, Glob
 argument-hint: "[description of the feature or requirement]"
@@ -8,7 +8,7 @@ argument-hint: "[description of the feature or requirement]"
 
 # Write Story
 
-Write a complete, high-quality user story with structured metadata ready for GitHub Issues or Jira.
+Write a complete, high-quality user story with structured metadata and a human-readable story body, presented as separate sections.
 
 ## Input
 
@@ -184,7 +184,9 @@ Additional rules:
 
 For **backlog** stories, see the Backlog-Tier Output section below — only `## User Story` is required.
 
-Print YAML frontmatter followed by the markdown body. Example:
+Present the output in two separate sections under distinct headings. The contributor must be able to identify and copy each section independently.
+
+**Section 1 — Structured Metadata** (for downstream tooling):
 
 ```yaml
 ---
@@ -206,7 +208,11 @@ acceptance_criteria:
   - "Given the customer has no email on file, when an approval triggers notification, then no email is sent and a warning is logged"
   - "Given the email service is unavailable, when a notification is triggered, then the send is retried up to 3 times"
 ---
+```
 
+**Section 2 — Story Body** (human-readable content for collaborators):
+
+```markdown
 ## User Story
 
 As an **online customer**,
@@ -233,6 +239,8 @@ Use this format when readiness is `backlog` — the story has hard blockers on u
 
 **Skip:** acceptance criteria, technical notes, model recommendation, INVEST validation.
 
+**Section 1 — Structured Metadata**:
+
 ```yaml
 ---
 type: story
@@ -248,7 +256,11 @@ dependencies:
   - blocked_by: "Implement billing event pipeline"
     reason: "Billing events must be emitted before webhooks can deliver them"
 ---
+```
 
+**Section 2 — Story Body**:
+
+```markdown
 ## User Story
 
 As an **integration partner**,
