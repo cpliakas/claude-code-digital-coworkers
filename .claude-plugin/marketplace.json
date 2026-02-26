@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "product-owner",
+      "name": "product-ops",
       "source": "./plugins/product-ops",
-      "description": "Product owner agent and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
-      "version": "0.7.0"
+      "description": "Product ownership and agile coaching agents and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
+      "version": "0.8.0"
     },
     {
       "name": "cloud-engineering-aws",
