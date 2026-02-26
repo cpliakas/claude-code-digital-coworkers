@@ -53,6 +53,24 @@ A Claude Code plugin marketplace containing reusable agents and skills organized
 - The harness executes tool calls in-process (Python functions), bypassing MCP/skill transport — it only needs the JSON data files
 - Tests live in `benchmark/tests/` and use pytest; run with `cd benchmark && pytest`
 
+### Flow Diagrams
+
+Plugin READMEs may include Mermaid flow diagrams that visualize skill authoring flows and agent delegation routing. Keep these diagrams in sync with their corresponding skill or agent behavior.
+
+**Changes that require diagram updates:**
+
+- Skill process steps added, removed, or reordered (e.g., a new gate or branch in a skill's step sequence)
+- Agent delegation rules changed (e.g., which agent owns a review path, when one agent hands off to another)
+- Authoring flow behavior changed (e.g., a new conditional branch, a new output path, a changed decision point)
+
+**Changes that do not require diagram updates:**
+
+- Wording fixes or copy edits to prose descriptions
+- Metadata adjustments (frontmatter fields, YAML values) that don't alter flow logic
+- Adding or removing examples that don't change the documented process
+
+When writing a story that touches skill process steps, agent delegation rules, or authoring flow behavior, include a Definition of Done item: "Update the corresponding Mermaid flow diagram in the plugin README to reflect the changed behavior."
+
 ### README
 - Keep README.md in sync with any changes to plugins, agents, or skills
 - The Plugins section tables must reflect current agent/skill names and descriptions
