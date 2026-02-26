@@ -164,7 +164,27 @@ Before presenting the story, verify:
 
 ### 7. Peer Review
 
-Run `/refine-story` on the draft story. Review the feedback and apply all failing items: rewrite implementation-bound ACs, add missing DoD, fix INVEST failures, reclassify horizontal work. Produce the final revised story followed by a `## Change Summary` section listing what was changed and why (one bullet per change). If no changes were needed, omit the Change Summary.
+**Delivery guarantee:** This step MUST conclude with the complete formatted story (Sections 1 and 2 from step 5) as the primary output. Nothing — no review feedback, coaching report, or product concern — replaces or defers the story delivery.
+
+Run `/refine-story` on the draft story. Categorize every failing item into one of two categories and handle it accordingly:
+
+**Craft issues** — mechanical problems fixable without product judgment:
+
+- AC wording (implementation language, vague criteria, non-independent tests)
+- DoD placement (completion standards mixed into ACs)
+- Scope boundary gaps (missing out-of-scope statements)
+- INVEST failures with clear rewrites (testability, estimability)
+
+Apply craft fixes directly to the story. Record each fix in the `## Change Summary` section (one bullet per change with rationale). If no craft fixes were needed, omit the Change Summary.
+
+**Product concerns** — substantive questions requiring user judgment:
+
+- Horizontal work (pure infrastructure with no user-visible outcome)
+- Scope-fit (story may belong to a different phase or epic)
+- Reclassification (story is really a technical task or enabler)
+- Cross-cutting concerns (unresolved dependencies, sequencing conflicts)
+
+Collect product concerns for presentation to the user AFTER the story output. Do not attempt to resolve product concerns by modifying the story or escalating to another agent.
 
 ## Output
 
@@ -232,6 +252,20 @@ so that I know my order is being processed without needing to check the website.
 - **Constraints**: Email must be sent asynchronously; must comply with CAN-SPAM
 - **Recommended model**: sonnet — multi-step async flow with cross-service integration warrants the workhorse model
 ```
+
+### Product Considerations (conditional)
+
+Present this section AFTER the complete story output (Sections 1 and 2) when Step 7 identified product concerns. This section is NOT part of the story artifact — it is not included in the YAML metadata or the story body.
+
+For each product concern:
+
+- State the concern with enough context for the user to understand the issue
+- Explain why this is a product decision rather than a craft fix
+- Describe the trade-offs or options available
+
+End with: "For interactive coaching on any of these concerns, consult `agile-coach`."
+
+Omit this section entirely when no product concerns were identified in Step 7.
 
 ### Backlog-Tier Output
 
