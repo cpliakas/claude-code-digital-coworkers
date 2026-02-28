@@ -77,3 +77,32 @@ When writing a story that touches skill process steps, agent delegation rules, o
 - Keep README.md in sync with any changes to plugins, agents, or skills
 - The Plugins section tables must reflect current agent/skill names and descriptions
 - The Repository Structure tree must reflect the current file layout
+
+## GitHub Conventions
+
+### Issue Relationships
+
+Use GitHub's native relationship sidebar — **not** a `Relationships` section in the issue body.
+
+```bash
+# 1. Fetch node IDs (batch multiple issues in one query)
+gh api graphql -f query='{
+  repository(owner: "cpliakas", name: "claude-code-digital-coworkers") {
+    i1: issue(number: ISSUE_NUM_1) { id }
+    i2: issue(number: ISSUE_NUM_2) { id }
+  }
+}'
+
+# 2. Mark issue A as blocked by issue B
+gh api graphql -f query='
+mutation {
+  addBlockedBy(input: {
+    issueId: "<blocked-node-id>",
+    blockingIssueId: "<blocker-node-id>"
+  }) { clientMutationId }
+}'
+```
+
+- `addBlockedBy` — marks issue A as blocked by issue B (renders as "blocked by" in the sidebar)
+- `addBlocking` — inverse; marks issue A as blocking issue B
+- Always set these after creating issues that have dependency relationships
