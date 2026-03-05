@@ -126,7 +126,7 @@ If no runbook exists for the failure mode, invoke `/write-runbook` after resolvi
 - The same procedure is performed more than once → if you did it twice, you will do it again; write it down after the second time
 - The procedure modifies production state → a runbook is required at minimum to document the rollback path
 
-**Completeness for automated procedures:** When a procedure normally runs via automation, every step the automation performs implicitly must be listed explicitly in the manual recovery path. Automation hides setup steps — loading environment variables, validating credentials, acquiring locks, checking prerequisites — that a responder bypassing it will not know to perform. Review any runbook step that says "run the script": if that script can itself be blocked, the runbook is incomplete. Before authoring or reviewing a runbook for an automated procedure, ask: *What does the normal automation perform that a responder would miss if bypassing it?* Every answer becomes an explicit numbered step — not a reference to run the script.
+**Completeness for automated procedures:** When a procedure normally runs via automation, every step the automation performs implicitly must be listed explicitly in the manual recovery path. Before authoring or reviewing a runbook, ask: *What does the normal automation perform that a responder would miss if bypassing it?* Every answer becomes an explicit numbered step — never a reference to "run the script." If the script can itself be blocked, the runbook is incomplete.
 
 Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service name, or procedure description.
 

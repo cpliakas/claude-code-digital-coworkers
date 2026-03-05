@@ -38,7 +38,7 @@ Assign a unique ID using the pattern `RUN-[SERVICE-PREFIX]-[NNN]` where:
 
 Use the template for the selected type below. Fill every section with specifics derived from `$ARGUMENTS`. Do not leave placeholder text that requires the user to fill in — infer reasonable defaults and mark them with `[VERIFY]` where validation against the real system is required.
 
-**If this procedure is normally executed by automation or a script:** Before writing steps, answer this question and incorporate every answer as an explicit numbered step: *What steps does the normal automation perform implicitly that a responder would miss if bypassing it?* Common examples: loading environment variables, fetching or validating credentials, acquiring locks, checking prerequisites, taking a pre-operation backup. A runbook step that says "run the script" is incomplete if the script can itself be blocked — list what the script does so a responder can execute the procedure without it.
+**If this procedure is normally executed by automation or a script:** Ask: *What steps does the normal automation perform implicitly that a responder would miss if bypassing it?* Incorporate every answer as an explicit numbered step. Common hidden steps: loading environment variables, validating credentials, acquiring locks, checking prerequisites, taking a pre-operation backup. Never write "run the script" — list what the script does so a responder can execute the procedure without it.
 
 ---
 
