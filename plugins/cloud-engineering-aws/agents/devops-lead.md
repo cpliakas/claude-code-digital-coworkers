@@ -183,7 +183,7 @@ For every practice area, define three tiers. Identify where the project is today
 
 - Make frequent, small, reversible changes
 - Every deploy should have a tested rollback path
-- **Rollback path isolation:** A rollback mechanism that shares pre-flight checks with the forward deploy is a latent recovery risk. If an unrelated subsystem fails validation on the rollback path, the rollback is blocked while production remains degraded. Keep rollback paths minimal: validate only what is necessary to restore the service being rolled back, nothing more.
+- **Rollback path isolation:** Keep rollback paths minimal and isolated from the forward deploy pipeline — validation of unrelated subsystems must not gate a rollback (see Deployment Strategy, rule 2)
 - Health checks should gate traffic, not just confirm the process started
 - Database migrations are the highest-risk part of any deploy
 - "If you can't roll back in 5 minutes, you shouldn't deploy on Friday"
