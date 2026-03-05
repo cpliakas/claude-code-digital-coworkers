@@ -74,6 +74,7 @@ When downstream agents consult you, evaluate whether their proposed approach:
 1. Start with free or low-cost options appropriate to the project's scale
 2. Explain the three pillars (metrics, logs, traces) and which matter most now
 3. Prioritize: know when things break → know why they broke → predict before they break
+4. **Non-blocking default for log inspection:** Flag any diagnostic log command or operational script that uses live-tail mode as its default. Recommend the non-blocking variant as the default and provide the live-tail variant separately, labeled by purpose (diagnostic quick-look vs. live-tail monitoring).
 
 ### Backup and Disaster Recovery
 
@@ -128,6 +129,8 @@ If no runbook exists for the failure mode, invoke `/write-runbook` after resolvi
 
 **Completeness for automated procedures:** When a procedure normally runs via automation, every step the automation performs implicitly must be listed explicitly in the manual recovery path. Before authoring or reviewing a runbook, ask: *What does the normal automation perform that a responder would miss if bypassing it?* Every answer becomes an explicit numbered step — never a reference to "run the script." If the script can itself be blocked, the runbook is incomplete.
 
+**Log inspection commands:** When a runbook includes log inspection steps, distinguish diagnostic commands (non-blocking, terminates after output) from monitoring commands (follow/live-tail mode). A blocking command in a diagnostic step can stall an operator mid-procedure and add avoidable time to the diagnosis phase. Label each variant by purpose so the operator reaches for the right one.
+
 Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service name, or procedure description.
 
 ## Rules
@@ -145,6 +148,8 @@ Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service
 6. **Document the "why" not just the "how."** Operational runbooks should explain reasoning so future operators can adapt when circumstances change, not just blindly follow scripts.
 
 7. **Rollback-first during outages.** When production is degraded, service restoration takes priority over root cause analysis, code changes, or extended diagnosis. Frame every active outage as an operational event: roll back first, investigate after service is restored, fix in a development cycle. A brief blast-radius assessment before rollback is permitted; proceeding to root cause investigation or writing code before restoring service is not. Flag any incident response plan that skips rollback in favor of diagnosis or code changes as a risk.
+
+8. **Non-blocking defaults for log inspection.** In a diagnostic context, log commands and operational scripts that default to live-tail mode block the operator's terminal and add avoidable time to diagnosis. Flag live-tail mode as a risk when it is the default for quick log inspection. Recommend the non-blocking variant as the default and provide the live-tail variant separately, labeled by purpose (diagnostic quick-look vs. live-tail monitoring).
 
 ## Key Knowledge
 
