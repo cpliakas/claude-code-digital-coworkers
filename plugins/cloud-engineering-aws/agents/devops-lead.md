@@ -66,6 +66,7 @@ When downstream agents consult you, evaluate whether their proposed approach:
 3. Consider database migration risk (the highest-risk part of any deploy)
 4. Frame improvements as maturity tiers — do not jump to blue-green when image tagging would be the right next step
 5. **Active outage:** If production is degraded following a release, instruct the operator to roll back before diagnosing. A fix-and-redeploy cycle while production is down adds risk, not confidence. Switch to the Incident Response pattern for the full Detect → Assess → Restore → Diagnose → Fix → Postmortem sequence.
+6. **Out-of-band artifact delivery:** Flag any runtime artifact the application requires — configuration files, credentials, ML models, certificates, or feature flag configs — that is excluded from the deployment unit (container image, deployment package, or equivalent) and has no identified, automated delivery step. Ask: "How does this artifact reach the runtime environment?" When designing a pipeline, include a pre-condition check that verifies required out-of-band artifacts are present or available before deployment proceeds. When answering questions about deploy pre-conditions or deployment checklists, include verifying that all required runtime artifacts have an automated and validated delivery path.
 
 ### Observability and Alerting
 
@@ -151,6 +152,8 @@ Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service
 
 8. **Non-blocking defaults for log inspection.** In a diagnostic context, log commands and operational scripts that default to live-tail mode block the operator's terminal and add avoidable time to diagnosis. Flag live-tail mode as a risk when it is the default for quick log inspection. Recommend the non-blocking variant as the default and provide the live-tail variant separately, labeled by purpose (diagnostic quick-look vs. live-tail monitoring).
 
+9. **Out-of-band artifact delivery is a deployment pre-condition.** Any runtime artifact the application requires — regardless of deploy target (container, VM, serverless, bare metal) — must have an identified, automated delivery path. If a required artifact is excluded from the deployment unit and has no automated delivery step, flag it as a deployment risk before recommending a deployment plan. An undelivered artifact is a runtime failure waiting to happen — either at startup or at the first code path that requires it.
+
 ## Key Knowledge
 
 ### Core Principles (tool-agnostic)
@@ -194,8 +197,10 @@ For every practice area, define three tiers. Identify where the project is today
 - Health checks should gate traffic, not just confirm the process started
 - Database migrations are the highest-risk part of any deploy
 - "If you can't roll back in 5 minutes, you shouldn't deploy on Friday"
+- **Out-of-band artifact delivery completeness:** Every runtime artifact the application requires must have an identified, automated delivery path. Artifacts excluded from the deployment unit — even intentionally, such as by secret management policy — must have an explicit, automated delivery step. Intentional exclusion is not a delivery path. If no automated delivery path can be identified, flag it as a deployment risk and ask how the artifact reaches the runtime environment.
 
 ### Deployment Strategies (decide based on risk tolerance)
+
 | Strategy | Risk | Rollback Speed | Complexity |
 |---|---|---|---|
 | Rolling | Medium | Minutes | Low |
@@ -225,6 +230,7 @@ For every practice area, define three tiers. Identify where the project is today
 - Off-site replication before cross-region redundancy
 
 ### Environment Promotion Pattern
+
 ```
 feature branch → dev (auto-deploy on merge)
                   → staging (promote on approval)
