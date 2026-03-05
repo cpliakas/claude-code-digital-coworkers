@@ -14,7 +14,7 @@ The plugin has two modes:
 
 **Work sequencing:** The `product-owner` agent reads your roadmap and advises on ordering, prerequisites, and phase transitions. It pushes back when proposed work skips a dependency or conflicts with what's planned next. It doesn't decide what to build or why; it organizes and sequences the work within the direction you've already set.
 
-**Requirement authoring:** Four skills (`/write-spike`, `/write-epic`, `/write-story`, `/decompose-requirement`) formalize requirements. Use `/write-spike` when a work area is too uncertain to scope directly; the other three skills take the output forward. `/write-story` automatically invokes `/refine-story` as a peer review step before producing the final output.
+**Requirement authoring:** Five skills formalize requirements (`/write-spike`, `/write-epic`, `/decompose-requirement`, `/write-story`, `/write-bug`); a sixth — `/refine-story` — functions as an internal quality gate called automatically by `/write-story` rather than an authoring entry point. Use `/write-spike` when a work area is too uncertain to scope directly; `/write-epic`, `/decompose-requirement`, and `/write-story` take the output forward for feature work. Use `/write-bug` for bug reports — it applies RIMGEN validation rather than INVEST.
 
 ## Architecture
 
@@ -58,12 +58,14 @@ The `agile-coach` agent is a peer coach for story quality review. It scores stor
 The skills form a natural progression from broad to specific, with a quality gate before backlog entry:
 
 ```
-Uncertain work area
-    │
-    ▼
-/write-spike ─────────── Resolve uncertainty first
-    │                    Problem restatement, options, findings,
-    │                    remaining unknowns, story seed
+Uncertain work area                           Bug report
+    │                                              │
+    ▼                                              ▼
+/write-spike ─────────── Resolve uncertainty  /write-bug ──────── Scaffold bug report
+    │                    Problem restatement,                      RIMGEN validation,
+    │                    options, findings,                        reproduction steps,
+    │                    remaining unknowns,                       severity, priority
+    │                    story seed
     │
     ▼
 Feature idea (ready to scope)
@@ -108,6 +110,25 @@ RIF output is structured so that official platform plugins can consume it withou
 | `parent` | Sub-issue parent | Epic Link |
 
 ## Flow diagrams
+
+### Skill routing
+
+Shows which skill to use based on the type of work being captured.
+
+```mermaid
+flowchart TD
+    Start{"What are you<br/>capturing?"}
+    Start -- "Uncertain area,<br/>too early to scope" --> WS["/write-spike"]
+    Start -- "New feature<br/>initiative" --> WE["/write-epic"]
+    Start -- "Bug / regression" --> WB["/write-bug"]
+    WS -- "Resolved" --> WE
+    WS -- "Inconclusive /<br/>unknowns remain" --> FU["Follow-up action<br/>or defer"]
+    WE --> DR["/decompose-requirement"]
+    DR --> WST["/write-story"]
+    WST --> RS["/refine-story<br/>(called automatically)"]
+    WB --> Done(("Filed"))
+    RS --> Done
+```
 
 ### `/write-story` authoring flow
 
@@ -197,6 +218,7 @@ In the standalone path, `agile-coach` hands off to `product-owner` when a story'
 | "Break this story into subtasks" | `/decompose-requirement` |
 | "Write a proper story for this requirement" | `/write-story` |
 | "Score this draft against INVEST and coaching principles" | `/refine-story` |
+| "File a structured bug report" | `/write-bug` |
 
 ## What this plugin does not do
 

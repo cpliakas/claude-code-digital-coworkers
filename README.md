@@ -24,7 +24,7 @@ The `cloud-engineering-aws` plugin illustrates this with a two-tier model: `devo
 
 One risk of delegating implementation to agents is losing sight of what actually matters. The `product-owner` agent is intended as a check on that: it maintains roadmap context, advises on sequencing, and pushes back when proposed work doesn't align with current priorities.
 
-The hope is that agents coordinating with the product owner execute with better context, and that humans get clearer guidance on sequencing toward broader goals. The `/write-epic`, `/write-story`, and `/decompose-requirement` skills produce structured artifacts that land directly in GitHub Issues or Jira, keeping the backlog organized with well-refined user stories.
+The hope is that agents coordinating with the product owner execute with better context, and that humans get clearer guidance on sequencing toward broader goals. The `/write-epic`, `/write-story`, `/write-bug`, and `/decompose-requirement` skills produce structured artifacts that land directly in GitHub Issues or Jira, keeping the backlog organized with well-refined requirements.
 
 ### Benchmark harness for measurable agent quality
 
@@ -56,6 +56,7 @@ Product operations for roadmap planning, requirement authoring, and structured o
 | Agent | `agile-coach`            | Peer coach that reviews story drafts against INVEST criteria and seven agile coaching principles         |
 | Skill | `/write-epic`            | Write an epic specification with structured metadata compatible with GitHub Issues and Jira              |
 | Skill | `/write-story`           | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
+| Skill | `/write-bug`             | Scaffold a RIMGEN-validated bug report with reproduction steps, severity, and priority                  |
 | Skill | `/refine-story`          | Score a story draft against INVEST and agile coaching principles; returns a structured report            |
 | Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata                  |
 
@@ -146,6 +147,7 @@ claude-code-digital-coworkers/
     │   └── skills/
     │       ├── write-epic/SKILL.md
     │       ├── write-story/SKILL.md
+    │       ├── write-bug/SKILL.md
     │       ├── refine-story/SKILL.md
     │       └── decompose-requirement/SKILL.md
     └── cloud-engineering-aws/
