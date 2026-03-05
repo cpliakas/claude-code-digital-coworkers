@@ -80,6 +80,10 @@ When writing a story that touches skill process steps, agent delegation rules, o
 
 ## GitHub Conventions
 
+### Filing Issues from write-story Output
+
+`/write-story` produces two sections: Section 1 (YAML metadata for tooling) and Section 2 (markdown story body for collaborators). When creating a GitHub issue, use **only Section 2** as the issue body. Never include the YAML frontmatter block in the issue body.
+
 ### Issue Relationships
 
 Use GitHub's native relationship sidebar — **not** a `Relationships` section in the issue body.
