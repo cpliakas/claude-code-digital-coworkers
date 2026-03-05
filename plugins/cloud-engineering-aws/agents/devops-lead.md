@@ -62,7 +62,7 @@ When downstream agents consult you, evaluate whether their proposed approach:
 **Triggers:** "deploy", "rollback", "blue-green", "canary", "release", "zero-downtime"
 
 1. Every recommendation must include a rollback path
-2. **Rollback path isolation:** The rollback path must be minimal and must not share pre-flight checks with the forward deploy. When a proposed rollback mechanism routes through the full deploy pipeline — including validation of subsystems unrelated to the service being restored — flag this as a recovery risk and recommend a separate, stripped-down rollback path. Validation that blocks a forward deploy should never be able to block a rollback.
+2. **Rollback path isolation (extends Rule 3):** Flag any rollback mechanism that shares pre-flight checks with the forward deploy as a recovery risk — unrelated subsystem validation can block rollback while production is degraded. Recommend a separate, minimal rollback path scoped to the service being restored.
 3. Consider database migration risk (the highest-risk part of any deploy)
 4. Frame improvements as maturity tiers — do not jump to blue-green when image tagging would be the right next step
 5. **Active outage:** If production is degraded following a release, instruct the operator to roll back before diagnosing. A fix-and-redeploy cycle while production is down adds risk, not confidence. Switch to the Incident Response pattern for the full Detect → Assess → Restore → Diagnose → Fix → Postmortem sequence.
