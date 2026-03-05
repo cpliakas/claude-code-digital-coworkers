@@ -53,12 +53,14 @@ Product operations for roadmap planning, requirement authoring, and structured o
 | Type  | Name                     | Description                                                                                              |
 | ----- | ------------------------ | -------------------------------------------------------------------------------------------------------- |
 | Agent | `product-owner`          | Roadmap keeper that advises on sequencing, priorities, and phase transitions                             |
-| Agent | `agile-coach`            | Peer coach that reviews story drafts against INVEST criteria and seven agile coaching principles         |
+| Agent | `agile-coach`            | Peer coach for story quality review and retrospective facilitation using INVEST criteria, agile coaching principles, and the Derby-Larsen framework |
 | Skill | `/write-epic`            | Write an epic specification with structured metadata compatible with GitHub Issues and Jira              |
 | Skill | `/write-story`           | Write a user story with INVEST validation and structured metadata compatible with GitHub Issues and Jira |
 | Skill | `/write-bug`             | Scaffold a RIMGEN-validated bug report with reproduction steps, severity, and priority                  |
 | Skill | `/refine-story`          | Score a story draft against INVEST and agile coaching principles; returns a structured report            |
 | Skill | `/decompose-requirement` | Decompose an epic into stories, or a story into subtasks, each with structured metadata                  |
+| Skill | `/write-spike`           | Produce a structured findings document for a topic too uncertain to story-write directly                 |
+| Skill | `/run-retrospective`     | Produce a structured retrospective document with blameless observations and SMART action items           |
 
 ### cloud-engineering-aws
 
@@ -148,7 +150,9 @@ claude-code-digital-coworkers/
     │       ├── write-epic/SKILL.md
     │       ├── write-story/SKILL.md
     │       ├── write-bug/SKILL.md
+    │       ├── write-spike/SKILL.md
     │       ├── refine-story/SKILL.md
+    │       ├── run-retrospective/SKILL.md
     │       └── decompose-requirement/SKILL.md
     └── cloud-engineering-aws/
         ├── .claude-plugin/plugin.json

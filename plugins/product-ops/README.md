@@ -16,6 +16,8 @@ The plugin has two modes:
 
 **Requirement authoring:** Five skills formalize requirements (`/write-spike`, `/write-epic`, `/decompose-requirement`, `/write-story`, `/write-bug`); a sixth — `/refine-story` — functions as an internal quality gate called automatically by `/write-story` rather than an authoring entry point. Use `/write-spike` when a work area is too uncertain to scope directly; `/write-epic`, `/decompose-requirement`, and `/write-story` take the output forward for feature work. Use `/write-bug` for bug reports — it applies RIMGEN validation rather than INVEST.
 
+**Retrospective facilitation:** `/run-retrospective` produces a structured retrospective document from a sprint or body-of-work description. It follows the Derby-Larsen five-phase framework with blameless framing and SMART action items. Invoked through the `agile-coach` agent or directly as a skill.
+
 ## Architecture
 
 This plugin sits at the top of a three-layer stack:
@@ -51,7 +53,7 @@ Invoke it after completing significant work:
 
 When the conversation turns to authoring requirements, the agent delegates to the skills below.
 
-The `agile-coach` agent is a peer coach for story quality review. It scores story drafts against INVEST criteria and seven coaching principles, returning a structured report with specific rewrites for every failure. Consult it before a story enters the backlog to catch scope boundary problems, implementation-bound acceptance criteria, missing Definition of Done, or horizontal work masquerading as a user story. `agile-coach` and `product-owner` are peers — neither reports to the other.
+The `agile-coach` agent is a peer coach for story quality review and retrospective facilitation. It scores story drafts against INVEST criteria and seven coaching principles, returning a structured report with specific rewrites for every failure. Consult it before a story enters the backlog to catch scope boundary problems, implementation-bound acceptance criteria, missing Definition of Done, or horizontal work masquerading as a user story. It also facilitates structured retrospectives over a body of work using `/run-retrospective`, producing blameless observations, root-cause insights, and SMART action items. `agile-coach` and `product-owner` are peers — neither reports to the other.
 
 ### The skills: authoring layer
 
@@ -92,7 +94,7 @@ Feature idea (ready to scope)
                           specific rewrites for every failure
 ```
 
-Each skill produces output in the **Requirement Interchange Format (RIF)**: a YAML frontmatter block containing machine-parseable metadata, followed by a human-readable markdown body. The same artifact serves both audiences.
+Each requirement authoring skill produces output in the **Requirement Interchange Format (RIF)**: a YAML frontmatter block containing machine-parseable metadata, followed by a human-readable markdown body. The same artifact serves both audiences.
 
 ### The output: flowing downstream
 
@@ -121,13 +123,15 @@ flowchart TD
     Start -- "Uncertain area,<br/>too early to scope" --> WS["/write-spike"]
     Start -- "New feature<br/>initiative" --> WE["/write-epic"]
     Start -- "Bug / regression" --> WB["/write-bug"]
+    Start -- "Retrospective on<br/>completed work" --> RR["/run-retrospective"]
     WS -- "Resolved" --> WE
     WS -- "Inconclusive /<br/>unknowns remain" --> FU["Follow-up action<br/>or defer"]
     WE --> DR["/decompose-requirement"]
     DR --> WST["/write-story"]
     WST --> RS["/refine-story<br/>(called automatically)"]
-    WB --> Done(("Filed"))
+    WB --> Done(("Delivered"))
     RS --> Done
+    RR --> Done
 ```
 
 ### `/write-story` authoring flow
@@ -172,9 +176,10 @@ Shows when `product-owner` owns the review flow end-to-end vs. when `agile-coach
 
 ```mermaid
 flowchart TD
-    Q{"When is the review<br/>happening?"}
+    Q{"What does the<br/>agile-coach do?"}
     Q -- "During /write-story" --> Mid
-    Q -- "Standalone review" --> SA
+    Q -- "Standalone story review" --> SA
+    Q -- "Retrospective facilitation" --> Retro
 
     subgraph Mid["product-owner owns the flow"]
         R1["/refine-story scores draft"] --> C1["Craft issues: apply directly"]
@@ -185,6 +190,13 @@ flowchart TD
         A1["agile-coach reviews story"] --> A2["Returns structured<br/>coaching report"]
         A2 --> A3["product-owner reviews<br/>scope findings"]
         A3 --> A4["Advises: defer, split,<br/>or reorder"]
+    end
+
+    subgraph Retro["agile-coach facilitates retro"]
+        RT1["agile-coach invokes<br/>/run-retrospective"] --> RT2["Returns retrospective<br/>document"]
+        RT2 --> RT3{"Action items affect<br/>roadmap or surface<br/>new work?"}
+        RT3 -- "Yes" --> RT4["Hand off to<br/>product-owner"]
+        RT3 -- "No" --> RT5["Deliver to<br/>team lead"]
     end
 ```
 
@@ -212,6 +224,7 @@ In the standalone path, `agile-coach` hands off to `product-owner` when a story'
 | "What's left in this phase?" | `product-owner` agent |
 | "We finished Y. What's next?" | `product-owner` agent |
 | "Review this story draft before I file it" | `agile-coach` agent |
+| "Run a retrospective on this sprint" | `agile-coach` agent via `/run-retrospective` |
 | "This area is too uncertain to scope or story-write" | `/write-spike` |
 | "Scope out a new feature area" | `/write-epic` |
 | "Break this epic into stories" | `/decompose-requirement` |
