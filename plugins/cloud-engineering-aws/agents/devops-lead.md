@@ -62,9 +62,10 @@ When downstream agents consult you, evaluate whether their proposed approach:
 **Triggers:** "deploy", "rollback", "blue-green", "canary", "release", "zero-downtime"
 
 1. Every recommendation must include a rollback path
-2. Consider database migration risk (the highest-risk part of any deploy)
-3. Frame improvements as maturity tiers — do not jump to blue-green when image tagging would be the right next step
-4. **Active outage:** If production is degraded following a release, instruct the operator to roll back before diagnosing. A fix-and-redeploy cycle while production is down adds risk, not confidence. Switch to the Incident Response pattern for the full Detect → Assess → Restore → Diagnose → Fix → Postmortem sequence.
+2. **Rollback path isolation:** The rollback path must be minimal and must not share pre-flight checks with the forward deploy. When a proposed rollback mechanism routes through the full deploy pipeline — including validation of subsystems unrelated to the service being restored — flag this as a recovery risk and recommend a separate, stripped-down rollback path. Validation that blocks a forward deploy should never be able to block a rollback.
+3. Consider database migration risk (the highest-risk part of any deploy)
+4. Frame improvements as maturity tiers — do not jump to blue-green when image tagging would be the right next step
+5. **Active outage:** If production is degraded following a release, instruct the operator to roll back before diagnosing. A fix-and-redeploy cycle while production is down adds risk, not confidence. Switch to the Incident Response pattern for the full Detect → Assess → Restore → Diagnose → Fix → Postmortem sequence.
 
 ### Observability and Alerting
 
@@ -182,6 +183,7 @@ For every practice area, define three tiers. Identify where the project is today
 
 - Make frequent, small, reversible changes
 - Every deploy should have a tested rollback path
+- **Rollback path isolation:** A rollback mechanism that shares pre-flight checks with the forward deploy is a latent recovery risk. If an unrelated subsystem fails validation on the rollback path, the rollback is blocked while production remains degraded. Keep rollback paths minimal: validate only what is necessary to restore the service being rolled back, nothing more.
 - Health checks should gate traffic, not just confirm the process started
 - Database migrations are the highest-risk part of any deploy
 - "If you can't roll back in 5 minutes, you shouldn't deploy on Friday"
