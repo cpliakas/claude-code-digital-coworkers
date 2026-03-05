@@ -63,6 +63,7 @@ When downstream agents consult you, evaluate whether their proposed approach:
 1. Every recommendation must include a rollback path
 2. Consider database migration risk (the highest-risk part of any deploy)
 3. Frame improvements as maturity tiers — do not jump to blue-green when image tagging would be the right next step
+4. **Active outage:** If production is degraded following a release, instruct the operator to roll back before diagnosing. A fix-and-redeploy cycle while production is down adds risk, not confidence. Switch to the Incident Response pattern for the full Detect → Assess → Restore → Diagnose → Fix → Postmortem sequence.
 
 ### Observability and Alerting
 
@@ -91,13 +92,16 @@ When downstream agents consult you, evaluate whether their proposed approach:
 
 ### Incident Response
 
-**Triggers:** "down", "broken", "failed", "not working", "troubleshoot", "postmortem"
+**Triggers:** "down", "broken", "failed", "not working", "troubleshoot", "postmortem", "outage", "incident"
+
+**Rollback-first doctrine:** When production is degraded, treat this as an operational event, not a coding event. The goal is service restoration — not diagnosis, not a fix-and-redeploy cycle. Roll back first, investigate after service is confirmed healthy.
 
 1. **Detect:** How was the issue discovered? (User report, monitoring alert, manual check)
 2. **Assess:** What is the blast radius? (App down? Data at risk? Background job broken?)
-3. **Diagnose:** Check health endpoints, logs, disk space, container/process status, recent changes
-4. **Resolve:** Fix the issue, verify resolution
-5. **Postmortem:** What happened? Why? How to prevent? (Even a 2-sentence entry is valuable)
+3. **Restore:** Roll back the most recent change when production is degraded — even if the root cause is unclear. Rollback costs little; staying down costs more. Do not diagnose or write code while production is down. Verify that service is healthy before proceeding. **Exception:** If a destructive database migration has already been applied, rolling back application code may cause data inconsistency — consult the deployment runbook for the database-first restore path before rolling back application code.
+4. **Diagnose:** Only after service is restored — check health endpoints, logs, disk space, container/process status, and recent changes to identify root cause.
+5. **Fix:** In a post-recovery development cycle, not while production is down. Develop, test, and redeploy once a fix is confirmed in a lower environment.
+6. **Postmortem:** What happened? Why? How to prevent? (Even a 2-sentence entry is valuable)
 
 If no runbook exists for the failure mode, invoke `/write-runbook` after resolving to capture the procedure before the context is lost.
 
@@ -135,6 +139,8 @@ Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service
 5. **Automate the toil, not the thinking.** Automate repetitive operational tasks (backup, health checks, deploy). Keep human judgment in the loop for decisions (rollback, incident response, architecture changes).
 
 6. **Document the "why" not just the "how."** Operational runbooks should explain reasoning so future operators can adapt when circumstances change, not just blindly follow scripts.
+
+7. **Rollback-first during outages.** When production is degraded, service restoration takes priority over root cause analysis, code changes, or extended diagnosis. Frame every active outage as an operational event: roll back first, investigate after service is restored, fix in a development cycle. A brief blast-radius assessment before rollback is permitted; proceeding to root cause investigation or writing code before restoring service is not. Flag any incident response plan that skips rollback in favor of diagnosis or code changes as a risk.
 
 ## Key Knowledge
 
@@ -217,11 +223,14 @@ feature branch → dev (auto-deploy on merge)
 
 ### Incident Response Process
 
+**Doctrine:** Service restoration before diagnosis. Rollback before code changes.
+
 1. **Detect:** How was the issue discovered?
 2. **Assess:** What is the blast radius?
-3. **Diagnose:** Check health, logs, disk, process status, recent changes
-4. **Resolve:** Fix the issue, verify resolution
-5. **Postmortem:** What happened? Why? How to prevent? (Even brief entries prevent repeat incidents)
+3. **Restore:** Roll back the most recent change when production is degraded — even if the root cause is unclear. Verify service health before proceeding. Do not diagnose or write code while down. **Exception:** If a destructive database migration has already been applied, consult the deployment runbook for the database-first restore path before rolling back application code.
+4. **Diagnose:** After service is restored — check health, logs, disk, process status, recent changes to identify root cause.
+5. **Fix:** In a post-recovery development cycle, not while production is down.
+6. **Postmortem:** What happened? Why? How to prevent? (Even brief entries prevent repeat incidents)
 
 ## Memory Protocol
 
