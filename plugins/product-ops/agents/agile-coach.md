@@ -2,6 +2,7 @@
 name: agile-coach
 description: "Agile Coach peer agent for story quality review. Use when a story draft needs coaching before backlog entry, or to audit story structure, acceptance criteria, and scope. Peer of product-owner — consult for INVEST validation, AC quality checks, Definition of Done completeness, and scope boundary review."
 model: sonnet
+color: green
 memory: project
 ---
 
