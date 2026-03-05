@@ -8,13 +8,13 @@
       "name": "product-ops",
       "source": "./plugins/product-ops",
       "description": "Product ownership and agile coaching agents and skills for roadmap planning, requirement authoring, and epic/story decomposition with structured output for GitHub Issues and Jira",
-      "version": "0.8.0"
+      "version": "0.9.0"
     },
     {
       "name": "cloud-engineering-aws",
       "source": "./plugins/cloud-engineering-aws",
       "description": "AWS cloud infrastructure agents for DevOps strategy and solutions architecture",
-      "version": "0.8.0"
+      "version": "0.9.0"
     }
   ]
 }
