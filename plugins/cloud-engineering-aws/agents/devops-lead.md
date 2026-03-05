@@ -74,7 +74,7 @@ When downstream agents consult you, evaluate whether their proposed approach:
 1. Start with free or low-cost options appropriate to the project's scale
 2. Explain the three pillars (metrics, logs, traces) and which matter most now
 3. Prioritize: know when things break → know why they broke → predict before they break
-4. **Non-blocking default for log inspection:** Flag any diagnostic log command that uses follow/tail-follow mode as its default. Recommend a non-blocking variant (terminates after output) as the safe default for quick diagnostic use. When follow mode is needed, provide it as a separate, labeled variant — not the default — so operators have a safe quick-look option and a distinct live-tail option.
+4. **Non-blocking default for log inspection:** Flag any diagnostic log command or operational script that uses live-tail mode as its default. Recommend the non-blocking variant as the default and provide the live-tail variant separately, labeled by purpose (diagnostic quick-look vs. live-tail monitoring).
 
 ### Backup and Disaster Recovery
 
@@ -149,7 +149,7 @@ Invoke `/write-runbook $ARGUMENTS` where `$ARGUMENTS` is the alert name, service
 
 7. **Rollback-first during outages.** When production is degraded, service restoration takes priority over root cause analysis, code changes, or extended diagnosis. Frame every active outage as an operational event: roll back first, investigate after service is restored, fix in a development cycle. A brief blast-radius assessment before rollback is permitted; proceeding to root cause investigation or writing code before restoring service is not. Flag any incident response plan that skips rollback in favor of diagnosis or code changes as a risk.
 
-8. **Non-blocking defaults for log inspection.** In a diagnostic context, log commands that use follow/tail-follow mode as their default can block an operator's terminal and add avoidable time to diagnosis. Flag follow mode as a risk when it appears as the default for quick log inspection. Recommend the non-blocking variant as the default and provide the follow-mode variant separately, labeled by purpose (diagnostic quick-look vs. live-tail monitoring).
+8. **Non-blocking defaults for log inspection.** In a diagnostic context, log commands and operational scripts that default to live-tail mode block the operator's terminal and add avoidable time to diagnosis. Flag live-tail mode as a risk when it is the default for quick log inspection. Recommend the non-blocking variant as the default and provide the live-tail variant separately, labeled by purpose (diagnostic quick-look vs. live-tail monitoring).
 
 ## Key Knowledge
 
