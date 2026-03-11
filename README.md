@@ -1,3 +1,5 @@
+> **This repository is deprecated.** Development has moved to [claude-code-engineering-leaders](https://github.com/cpliakas/claude-code-engineering-leaders).
+
 # Claude Code Digital Coworkers
 
 A collection of Claude Code plugins that give AI a well-defined operating context before it writes a single line of code. Most plugins in the broader community focus on a specific technical capability. This project takes a different angle: the plugins here focus on the context layer, giving AI the standards, constraints, and sequencing signals it needs to make better decisions about what to build and how to build it.
